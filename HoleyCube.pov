@@ -9,7 +9,7 @@ global_settings {
 
 camera {
 	perspective 
-	location z * -40
+	location z * -50
 	right x * 1
 	up y * 3/4
 	angle 20
@@ -98,11 +98,40 @@ light_source {
 #declare PartConnector[11][0] = 2;
 #declare PartConnector[11][1] = 2 + 3;
 
+#macro hex2rgb(hexString)
+	#macro hex2dec (hexChar)
+		#local V = asc(strupr(hexChar));
+		(V > 64 ? V - 55 : V - 48)
+	#end
+
+	<
+		16*hex2dec(substr(hexString, 1, 1))+hex2dec(substr(hexString, 2, 1)),
+		16*hex2dec(substr(hexString, 3, 1))+hex2dec(substr(hexString, 4, 1)),
+		16*hex2dec(substr(hexString, 5, 1))+hex2dec(substr(hexString, 6, 1))
+	> / 255
+#end
+
+#declare PartColor = array[NumParts];
+
+#declare PartColor[0] = hex2rgb("1d2b53");
+#declare PartColor[1] = hex2rgb("7e2553");
+#declare PartColor[2] = hex2rgb("008751");
+#declare PartColor[3] = hex2rgb("ab5236");
+
+#declare PartColor[4] = hex2rgb("ff004d");
+#declare PartColor[5] = hex2rgb("ffc300"); // hex2rgb("ffa300");
+#declare PartColor[6] = hex2rgb("ff8000"); // hex2rgb("ffec27");
+#declare PartColor[7] = hex2rgb("00e436");
+
+#declare PartColor[8] = hex2rgb("29adff");
+#declare PartColor[9] = <1, 0, 0.1>;
+#declare PartColor[10] = hex2rgb("ff77a8");
+#declare PartColor[11] = hex2rgb("065ab5");
 
 
-#macro OrientationForRod(N)
+#macro OrientationForRod(N, D)
 	transform {
-		translate <0, -1 + 2 * mod(N, 2), -1 + 2 * mod(div(N, 2), 2)> * 3
+		translate <0, -1 + 2 * mod(N, 2), -1 + 2 * mod(div(N, 2), 2)> * D
 
 		#for (I, 0, div(N, 4) - 1)
 			rotate x * 90
@@ -126,10 +155,22 @@ light_source {
 	}
 #end
 
-#for (I, 0, NumParts - 1)
-	object {
-		Part(I)
-		pigment { color Red }
-		OrientationForRod(I)
-	}
-#end
+//#debug concat("V =", vstr(3, PartColor[4], ", ", 0, 2), "\n")
+
+//#for (K, 0, 11)
+//	union {
+		#for (J, 0, 11)
+			union {
+				#for (I, 0, NumParts - 1)
+					object {
+						Part(I)
+						pigment { color rgb PartColor[I] }
+						OrientationForRod(I, 1)
+					}
+				#end
+				OrientationForRod(J, 3)
+			}
+		#end
+//		OrientationForRod(K, 9)
+//	}
+//#end
