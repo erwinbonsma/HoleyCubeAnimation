@@ -55,15 +55,15 @@ light_source {
 	#for (I, 0, 1)
 		union {
 			box {
-				<-1/2, -1/6, -1/2>, <-1/6, 1/6, 1/2>
+				<-1/2, -1/2, -1/6>, <-1/6, 1/2, 1/6>
 			}
 			box {
-				<1/6, -1/6, -1/2>, <1/2, 1/6, 1/2>
+				<1/6, -1/2, -1/6>, <1/2, 1/2, 1/6>
 			}
 			box {
 				<-1/2, -1/6, -1/6>, <1/2, 1/6, 1/6>
 			}
-			translate y * (2 * I - 1) / 3 
+			translate z * (2 * I - 1) / 3
 		}
 	#end
 }
@@ -75,18 +75,18 @@ light_source {
 #declare PartConnector[0][1] = 0;
 #declare PartConnector[1][0] = 0;
 #declare PartConnector[1][1] = 1;
-#declare PartConnector[2][0] = 2;
+#declare PartConnector[2][0] = 2 + 3;
 #declare PartConnector[2][1] = 0;
 #declare PartConnector[3][0] = 1;
 #declare PartConnector[3][1] = 0 + 3;
 
-#declare PartConnector[4][0] = 2 + 3;
-#declare PartConnector[4][1] = 2 + 3;
+#declare PartConnector[4][0] = 2;
+#declare PartConnector[4][1] = 2;
 #declare PartConnector[5][0] = 0 + 3;
 #declare PartConnector[5][1] = 0;
-#declare PartConnector[6][0] = 2 + 3;
+#declare PartConnector[6][0] = 2;
 #declare PartConnector[6][1] = 0;
-#declare PartConnector[7][0] = 2 + 3;
+#declare PartConnector[7][0] = 2;
 #declare PartConnector[7][1] = 1 + 3;
 
 #declare PartConnector[8][0] = 1;
@@ -94,9 +94,9 @@ light_source {
 #declare PartConnector[9][0] = 1;
 #declare PartConnector[9][1] = 1;
 #declare PartConnector[10][0] = 1;
-#declare PartConnector[10][1] = 2 + 3;
-#declare PartConnector[11][0] = 2 + 3;
-#declare PartConnector[11][1] = 2;
+#declare PartConnector[10][1] = 2;
+#declare PartConnector[11][0] = 2;
+#declare PartConnector[11][1] = 2 + 3;
 
 
 
