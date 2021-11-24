@@ -48,7 +48,7 @@
     #else
       #if (M[1].y > M[2].z)                 // Column 1
         #local s = sqrt(1+M[1].y-M[0].x-M[2].z) * 2;
-        #local r = <(M[0].y+M[1].x)/s,0.25*S,(M[1].z+M[2].y)/s,(M[2].x-M[0].z)/s>;
+        #local r = <(M[0].y+M[1].x)/s,0.25*s,(M[1].z+M[2].y)/s,(M[2].x-M[0].z)/s>;
       #else                                 // Column 2
         #local s = sqrt(1+M[2].z-M[0].x-M[1].y) * 2;
         #local r = <(M[2].x+M[0].z)/s,(M[1].z+M[2].y)/s,0.25*s,(M[0].y-M[1].x)/s>;
