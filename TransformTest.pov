@@ -1,11 +1,12 @@
 //Persistence of Vision Ray Tracer Scene Description File
 
 #include "colors.inc"
-#include "vectors.inc"
+
+#include "Anim.inc"
 
 camera {
 	orthographic
-	location < 3, 5, -5> * 2
+	location < 3, 2, -5> * 2
 	right x * 1
 	up y * 3/4
 	angle 60
@@ -29,36 +30,14 @@ light_source {
 }
 
 #declare Transform1 = transform {
-	rotate <-30, 20, -40>
-	translate <0, 0, 0>
+	rotate <-90, 0, 0>
+	translate <-5, 1, 1>
 }
 
 #declare Transform2 = transform {
-  rotate <90, 90, 180>
+  rotate <0, 0, 0>
 	translate <5, 2, 3>
 }
-
-#macro LerpTransform(T0, T1, T)
-	#local vX0 = <0, 0, 0>;
-	#local vY0 = <0, 0, 0>;
-	#local vZ0 = <0, 0, 0>;
-	#local pT0 = <0, 0, 0>;
-
-	#local vX1 = <0, 0, 0>;
-	#local vY1 = <0, 0, 0>;
-	#local vZ1 = <0, 0, 0>;
-	#local pT1 = <0, 0, 0>;
-
-	VectorsFromTransform(T0, vX0, vY0, vZ0, pT0)
-	VectorsFromTransform(T1, vX1, vY1, vZ1, pT1)
-
-	#local vX = (1 - T) * vX0 + T * vX1;
-	#local vY = (1 - T) * vY0 + T * vY1;
-	#local vZ = (1 - T) * vZ0 + T * vZ1;
-	#local pT = (1 - T) * pT0 + T * pT1;
-
-	TransformFromVectors(vX, vY, vZ, pT)
-#end
 
 object {
 	Object
