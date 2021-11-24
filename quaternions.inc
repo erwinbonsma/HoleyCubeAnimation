@@ -15,6 +15,7 @@
 #ifndef(QUATERNIONS_INC_TEMP)
 #declare QUATERNIONS_INC_TEMP = version;
 #version 3.5;
+#include "functions.inc"
 
 #macro QToMatrix(q)
   // Convert a quaternion to a Povray transformation matrix (4x3)
@@ -60,7 +61,7 @@
 
 #macro Qsc(q)
   // Square the quaternion components
-  q.x*q.x+q.y*q.y+q.z*q.z+q.t*q.t
+  (q.x * q.x + q.y * q.y + q.z * q.z + q.t * q.t)
 #end
 
 #macro QMagnitude(q)
@@ -97,8 +98,7 @@
 #macro QAxAn(q,an)
   // Return the rotation axis and angle (in parameter) of a quaternion
   #declare an = acos(q.t)*2;
-  #local sa = sqrt(1-q.t*q.t);
-  <q.x/sa,q.y/sa,q.z/sa>
+  (<q.x, q.y, q.z> / sqrt(1 - q.t * q.t))
 #end
 
 #macro VQRotate(vec,q)
@@ -147,17 +147,27 @@
 
 #macro Qln(q)
   // ln(q)
-  #local r = sqrt(q.x*q.x+q.y*q.y+q.z*q.z);
-  #local at = (r>0.00001?atan2(r,q.t)/r:0);
-  <at*q.x,at*q.y,at*q.z,0.5*log(Qsc(q))>
+  #local r = f_r(q.x, q.y, q.z);
+  #if (r > 0)
+    #local at = atan2(r, q.t) / r;
+  #else
+    #local at = 0;
+  #end
+
+  <at * q.x, at * q.y, at * q.z, 0.5 * ln(Qsc(q))>
 #end
 
 #macro QExp(q)
   // e^q
-  #local r = sqrt(q.x*q.x+q.y*q.y+q.z*q.z);
+  #local r = f_r(q.x, q.y, q.z);
   #local et = exp(q.t);
-  #local s = (r>=0.00001?et*sin(r)/r:0);
-  <s*q.x,s*q.y,s*q.z,et*cos(r)>
+  #if (r > 0)
+    #local s = et * sin(r) / r;
+  #else
+    #local s = 0;
+  #end
+
+  <s * q.x, s * q.y, s * q.z, et * cos(r)>
 #end
 
 #macro QLinear(qa,qb,i)
