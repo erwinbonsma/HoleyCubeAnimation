@@ -1,4 +1,5 @@
 // Defines basic puzzle parts (shape and colors) and their assembly
+#include "vectors.inc"
 
 #declare NumParts = 12;
 
@@ -105,17 +106,29 @@
 #declare PartColor[10] = hex2rgb("ff77a8");
 #declare PartColor[11] = hex2rgb("065ab5");
 
+#macro RotationForPart(N)
+	transform {
+		#for (I, 0, div(N, 4) - 1)
+			rotate x * 90
+			rotate z * 90
+		#end
+	}
+#end
+
+#macro _CorePositionForPart(N)
+	<0, -1 + 2 * mod(N, 2), -1 + 2 * mod(div(N, 2), 2)>
+#end
+
+#macro PositionForPart(N, D)
+	VectorTransform(_CorePositionForPart(N) * D, RotationForPart(N))
+#end
 
 // Transforms part N (0..11) so that it is oriented correctly.
 // Distance D specifies how much the parts are separated.
 // For D=1 the puzzle is assembled. For higher values, it provides an exploded view.
 #macro TransformForPart(N, D)
 	transform {
-		translate <0, -1 + 2 * mod(N, 2), -1 + 2 * mod(div(N, 2), 2)> * D
-
-		#for (I, 0, div(N, 4) - 1)
-			rotate x * 90
-			rotate z * 90
-		#end
+		translate _CorePositionForPart(N) * D
+		RotationForPart(N)
 	}
 #end

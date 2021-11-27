@@ -3,66 +3,63 @@
 #include "Anim.inc"
 
 // Order parts by increasing weight
-#declare InitialPartTransform = array[NumParts];
+#declare InitialPartPosition = array[NumParts];
+
+// Orient parts consistently
+#declare InitialPartRotation = array[NumParts];
 
 // Part 1: I I
-#declare InitialPartTransform[0] = transform {
+#declare InitialPartPosition[0] = <0, 0, 0>;
+#declare InitialPartRotation[0] = transform {
 	rotate x * 90
-	translate <0, 0, 0>
 }
-#declare InitialPartTransform[5] = transform {
-	translate <0, -2, 0>
-}
+#declare InitialPartPosition[5] = <0, -2, 0>;
 
 // Part 2: I H
-#declare InitialPartTransform[1] = transform {
+#declare InitialPartPosition[1] = <0, -4, 0>;
+#declare InitialPartRotation[1] = transform {
 	rotate x * 90
-	translate <0, -4, 0>
 }
-#declare InitialPartTransform[3] = transform {
+#declare InitialPartPosition[3] = <0, -6, 0>;
+#declare InitialPartRotation[3] = transform {
 	rotate y * 180
-	translate <0, -6, 0>
 }
 
 // Part 3: H H
-#declare InitialPartTransform[9] = transform {
+#declare InitialPartPosition[9] = <4, 0, 0>;
+#declare InitialPartRotation[9] = transform {
 	rotate x * 90
-	translate <4, 0, 0>
 }
-#declare InitialPartTransform[8] = transform {
+#declare InitialPartPosition[8] = <4, -2, 0>;
+#declare InitialPartRotation[8] = transform {
 	rotate x * 90
-	translate <4, -2, 0>
 }
 
 // Part 4: I X
-#declare InitialPartTransform[2] = transform {
+#declare InitialPartPosition[2] = <4, -4, 0>;
+#declare InitialPartRotation[2] = transform {
 	rotate x * 90
 	rotate y * 180
-	translate <4, -4, 0>
 }
-#declare InitialPartTransform[6] = transform {
+#declare InitialPartPosition[6] = <4, -6, 0>;
+#declare InitialPartRotation[6] = transform {
 	rotate x * 90
 	rotate y * 180
-	translate <4, -6, 0>
 }
 
 // Part 5: H X
-#declare InitialPartTransform[7] = transform {
+#declare InitialPartPosition[7] = <8, 0, 0>;
+#declare InitialPartRotation[7] = transform {
 	rotate y * 180
-	translate <8, 0, 0>
 }
-#declare InitialPartTransform[10] = transform {
+#declare InitialPartPosition[10] = <8, -2, 0>;
+#declare InitialPartRotation[10] = transform {
 	rotate x * 90
-	translate <8, -2, 0>
 }
 
 // Part 6: X X
-#declare InitialPartTransform[4] = transform {
-	translate <8, -4, 0>
-}
-#declare InitialPartTransform[11] = transform {
-	translate <8, -6, 0>
-}
+#declare InitialPartPosition[4] = <8, -4, 0>;
+#declare InitialPartPosition[11] = <8, -6, 0>;
 
 #declare AssemblyOrder = array[NumParts];
 
@@ -145,29 +142,31 @@ camera {
 //	}
 //#end
 
-#declare PartTransform = array[NumParts];
+#declare PartPosition = array[NumParts];
+#declare PartRotation = array[NumParts];
 #for (I, 0, NumParts - 1)
-	#declare PartTransform[I] = transform {
-		transform { InitialPartTransform[I] }
-		translate <-5, 3, 10>
-	};
+	#declare PartPosition[I] = InitialPartPosition[I] + <-5, 3, 10>;
+	#ifdef (InitialPartRotation[I])
+		#declare PartRotation[I] = InitialPartRotation[I];
+	#else
+		#declare PartRotation[I] = transform {}
+	#end
 #end
 
 #declare MoveSpeed = 1;
 
+// Move to exploded pre-assembly
 #for (I, 0, NumParts - 1)
-	#declare PartNum = AssemblyOrder[I];
-	#declare MoveDist = vlength(
-		VectorTransform(<0, 0, 0>, PartTransform[PartNum]) -
-		VectorTransform(<0, 0, 0>, TransformForPart(PartNum, 3))
-	);
-
 	#if (clock > Now)
-		#declare PartTransform[PartNum] = LerpTransform(
-			PartTransform[PartNum],
-			TransformForPart(PartNum, 3),
-			ramp(Now, Now + MoveDist / MoveSpeed, clock)
-		);
+		#declare PartNum = AssemblyOrder[I];
+		#declare MoveV = PositionForPart(PartNum, 3) - PartPosition[PartNum];
+		#declare MoveDist = vlength(MoveV);
+		#declare T = ramp(Now, Now + MoveDist / MoveSpeed, clock);
+
+		#declare PartPosition[PartNum] = PartPosition[PartNum] + T * MoveV;
+		#declare PartRotation[PartNum] = transform {
+			LerpRotation(PartRotation[PartNum], RotationForPart(PartNum), T)
+		};
 	#end
 
 	#declare Now = Now + 4;
@@ -177,6 +176,7 @@ camera {
 	object {
 		Part(I)
 		pigment { color rgb PartColor[I] }
-		transform { PartTransform[I] }
+		transform { PartRotation[I] }
+		translate PartPosition[I]
 	}
 #end
