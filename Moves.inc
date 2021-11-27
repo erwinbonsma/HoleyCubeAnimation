@@ -13,8 +13,8 @@
 #ifndef (PauseDuration)
 	#declare PauseDuration = 0.0;
 #end
-#ifndef (MoveSpeedup)
-	#declare MoveSpeedup = 1.0;
+#ifndef (MoveSpeed)
+	#declare MoveSpeed = 1.0;
 #end
 
 // Initial/default value. Temporarily changed by PartialMove macro.
@@ -219,7 +219,7 @@
 #end
 
 #macro ClockTicksForMove(V)
-	(vlength(V) / MoveSpeedup)
+	(vlength(V) / MoveSpeed)
 #end
 
 // This move should blend into the next. I.e. no pause at the end of this move, 
@@ -243,21 +243,21 @@
 #end
 
 #macro SlowMove(What, V)
-	#local PrevMoveSpeedup = MoveSpeedup;
-	#declare MoveSpeedup = 0.5;
+	#local PrevMoveSpeedup = MoveSpeed;
+	#declare MoveSpeed = 0.5;
 	
 	Move(What, V)
 	
-	#declare MoveSpeedup = PrevMoveSpeedup;
+	#declare MoveSpeed = PrevMoveSpeedup;
 #end
 
 #macro FastMove(What, V)
-	#local PrevMoveSpeedup = MoveSpeedup;
-	#declare MoveSpeedup = 2;
+	#local PrevMoveSpeedup = MoveSpeed;
+	#declare MoveSpeed = 2;
 	
 	Move(What, V)
 	
-	#declare MoveSpeedup = PrevMoveSpeedup;
+	#declare MoveSpeed = PrevMoveSpeedup;
 #end
 
 #macro Move6(What1, What2, V)

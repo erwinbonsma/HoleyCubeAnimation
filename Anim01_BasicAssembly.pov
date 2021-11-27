@@ -153,15 +153,16 @@ camera {
 	#end
 #end
 
-#declare MoveSpeed = 1;
+#declare MoveSpeed = 2;
 
+//--------------------------------------
 // Move to exploded pre-assembly
 #declare ClockStart = Now;
 #declare MaxNow = Now;
 
 #for (I, 0, NumParts - 1)
   // Move parts in parallel, with delay of 4 clock ticks
-	#declare Now = ClockStart + I * 4;
+	#declare Now = ClockStart + I * 2;
 
 	#if (clock > Now)
 		#declare PartNum = AssemblyOrder[I];
@@ -177,7 +178,47 @@ camera {
 	#end
 #end
 
-#declare Now = MaxNow;
+#declare Now = MaxNow + 3;
+
+//--------------------------------------
+// Assemble both puzzle
+
+#declare MoveSpeed = 1;
+
+// Assemble first half
+Move(<P_XxX, 0, 0>, -z * 2)
+Move(<P_I_H, 0, 0>, x * 2)
+Move(<P_XxX, P_I_H, 0>, -y * 2)
+
+Move(<P_H_X, 0, 0>, -z * 4)
+#declare Now = Now - 2;
+Move(<P_H_H, 0, 0>, -z * 2)
+
+Move6(<P_XxX, P_I_H, P_H_X>, <P_IxX, 0, 0>, -y * 2)
+
+Move(<P_I_I, 0, 0>, x * 2)
+
+// Assemble second half
+Move(<P_HxX, 0, 0>, z * 2)
+Move(<P_IxH, 0, 0>, -x * 2)
+Move(<P_HxX, P_IxH, 0>, -y * 2)
+
+Move(<P_HxH, 0, 0>, z * 2)
+#declare Now = Now - 2;
+Move(<P_I_X, 0, 0>, -x * 2)
+
+#declare Now = Now - 1;
+Move(<P_X_X, 0, 0>, z * 4)
+
+Move(<P_HxH, P_I_X, 0>, y * 2)
+
+// Assemble both halves
+Move6(<P_XxX, P_I_H, P_H_X>, <P_IxX, P_I_I, P_H_H>, <0, 2, 2>)
+#declare Now = Now - 2;
+Move6(<P_X_X, P_IxH, P_HxX>, <P_I_X, P_IxI, P_HxH>, <0, 0, -2>)
+
+Move6(<P_XxX, P_I_H, P_H_X>, <P_IxX, P_I_I, P_H_H>, -x * 2)
+Move6(<P_X_X, P_IxH, P_HxX>, <P_I_X, P_IxI, P_HxH>, x * 2)
 
 #for (I, 0, NumParts - 1)
 	object {
