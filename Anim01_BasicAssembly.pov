@@ -1,6 +1,7 @@
 #include "Scene.inc"
 #include "Parts.inc"
 #include "Moves.inc"
+#include "Anim.inc"
 
 // Order parts by increasing weight
 #declare InitialPartPosition = array[NumParts];
@@ -93,59 +94,21 @@
 	}
 #end
 
-// Show parts
-//camera {
-//	perspective
-//	location z * -50
-//	right x * 1
-//	up y * 3/4
-//	angle 20
-//	look_at < 0.0, 0.0, 0.0>
-//	rotate x * 30
-//	rotate y * 10
-//	translate z * 8
-//}
+#declare CameraPosition = <0, 12, -30>;
+#declare CameraLookAt = <-15, 0, 10>;
 
-// Animate to exploded assembly
-camera {
-	perspective
-	location z * -50
-	right x * 1
-	up y * 3/4
-	angle 20
-	look_at < 0.0, 0.0, 0.0>
-	translate <-3, 1, 0>
-	rotate x * 30
-	rotate y * 40
-}
+MoveVector(CameraLookAt, <0, 0, 10>, 4)
 
-
-//union {
-//	#for (I, 0, NumParts - 1)
-//		object {
-//			Part(I)
-//			pigment { color rgb PartColor[I] }
-//			transform {
-//				InitialPartTransform[I]
-//			}
-//		}
-//	#end
-//	translate <-5, 3, 10>
-//	//rotate y * 45
-//}
-//
-//#for (I, 0, NumParts - 1)
-//	object {
-//		Part(I)
-//		pigment { color rgb PartColor[I] }
-//		TransformForPart(I, 3)
-//	}
-//#end
+#declare Now0 = Now;
+MoveVector(CameraLookAt, <0, 0, 4>, 7)
+#declare Now = Now0;
+MoveVector(CameraPosition, <-23, 15, -25> * 1.2, 7)
+#declare Now = Now0;
 
 #declare PartPosition = array[NumParts];
 #declare PartRotation = array[NumParts];
 #for (I, 0, NumParts - 1)
-	#declare PartPosition[I] = InitialPartPosition[I] + <-5, 3, 10>;
+	#declare PartPosition[I] = InitialPartPosition[I] + <-4, 3, 10>;
 	#ifdef (InitialPartRotation[I])
 		#declare PartRotation[I] = InitialPartRotation[I];
 	#else
@@ -153,10 +116,11 @@ camera {
 	#end
 #end
 
-#declare MoveSpeed = 2;
-
 //--------------------------------------
 // Move to exploded pre-assembly
+
+#declare MoveSpeed = 2;
+
 #declare ClockStart = Now;
 #declare MaxNow = Now;
 
@@ -164,21 +128,22 @@ camera {
   // Move parts in parallel, with delay of 4 clock ticks
 	#declare Now = ClockStart + I * 2;
 
-	#if (clock > Now)
-		#declare PartNum = AssemblyOrder[I];
-		#declare DeltaV = PositionForPart(PartNum, 3) - PartPosition[PartNum];
-		#declare DeltaT = ClockTicksForMove(DeltaV);
+	#declare PartNum = AssemblyOrder[I];
+	#declare DeltaV = PositionForPart(PartNum, 3) - PartPosition[PartNum];
+	#declare DeltaT = ClockTicksForMove(DeltaV);
 
-		#declare NowBefore = Now;
-		TimedMove(<PartNum + 1, 0, 0>, DeltaV, DeltaT)
-		#declare Now = NowBefore;
-		TimedRotateToTransform(<PartNum + 1, 0, 0>, RotationForPart(PartNum), DeltaT)
+	#declare Now0 = Now;
+	TimedMove(<PartNum + 1, 0, 0>, DeltaV, DeltaT)
+	#declare Now = Now0;
+	TimedRotateToTransform(<PartNum + 1, 0, 0>, RotationForPart(PartNum), DeltaT)
 
-		#declare MaxNow = max(Now, MaxNow);
-	#end
+	#declare MaxNow = max(Now, MaxNow);
 #end
 
-#declare Now = MaxNow + 3;
+#declare Now = MaxNow - 3;
+MoveVector(CameraLookAt, <0, 0, 0>, 4)
+
+#declare Now = Now + 2;
 
 //--------------------------------------
 // Assemble both puzzle
@@ -212,13 +177,43 @@ Move(<P_X_X, 0, 0>, z * 4)
 
 Move(<P_HxH, P_I_X, 0>, y * 2)
 
-// Assemble both halves
-Move6(<P_XxX, P_I_H, P_H_X>, <P_IxX, P_I_I, P_H_H>, <0, 2, 2>)
-#declare Now = Now - 2;
-Move6(<P_X_X, P_IxH, P_HxX>, <P_I_X, P_IxI, P_HxH>, <0, 0, -2>)
 
-Move6(<P_XxX, P_I_H, P_H_X>, <P_IxX, P_I_I, P_H_H>, -x * 2)
-Move6(<P_X_X, P_IxH, P_HxX>, <P_I_X, P_IxI, P_HxH>, x * 2)
+// Assemble both halves
+#declare Now0 = Now;
+Move6(<P_XxX, P_I_H, P_H_X>, <P_IxX, P_I_I, P_H_H>, <0, 2, 2>)
+#declare D = Now - Now0;
+#declare Now = Now0;
+TimedMove6(<P_X_X, P_IxH, P_HxX>, <P_I_X, P_IxI, P_HxH>, <0, 0, -2>, D)
+
+#declare Now = Now0;
+MoveVector(CameraPosition, CameraPosition * 0.7, D)
+
+#declare Now0 = Now;
+SlowMove6(<P_XxX, P_I_H, P_H_X>, <P_IxX, P_I_I, P_H_H>, -x * 2)
+#declare Now = Now0;
+SlowMove6(<P_X_X, P_IxH, P_HxX>, <P_I_X, P_IxI, P_HxH>, x * 2)
+
+// Place camera based on position and look at vector
+
+#declare CameraV = CameraPosition - CameraLookAt;
+#declare CameraD = vlength(CameraV);
+#declare CameraD2 = sqrt(pow(CameraD, 2) - pow(CameraV.y, 2));
+
+camera {
+	perspective
+	location <0, 0, -CameraD>
+	right x * 1
+	up y * 3/4
+	angle 20
+	look_at <0, 0, 0>
+
+	rotate x * degrees(asin(CameraV.y / CameraD))
+	rotate y * -degrees(asin(CameraV.x / CameraD2))
+
+	translate  CameraLookAt
+}
+
+// Show puzzle parts
 
 #for (I, 0, NumParts - 1)
 	object {
@@ -228,3 +223,8 @@ Move6(<P_X_X, P_IxH, P_HxX>, <P_I_X, P_IxI, P_HxH>, x * 2)
 		translate PartPosition[I]
 	}
 #end
+
+//sphere {
+//	<0, 0, 0>, 1.5
+//	pigment { color White }
+//}

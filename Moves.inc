@@ -169,20 +169,19 @@
 
 #macro _RotateToTransform(What, Transform, Clock_MoveDone)
 	#if (Now < clock)
-		#local TransformFraction = 1;
 		#if (clock < Clock_MoveDone)
 			#local TransformFraction = (clock - Now) / (Clock_MoveDone - Now);
 			#declare NumMovesHandledFraction = TransformFraction;
-		#end
 
-		FractionRotatePartToTransform(What.x, Transform, TransformFraction)
-		FractionRotatePartToTransform(What.y, Transform, TransformFraction)
-		FractionRotatePartToTransform(What.z, Transform, TransformFraction)
-	#else
-		// For performance, set to target transform directly
-		SetPartTransform(What.x, Transform)
-		SetPartTransform(What.y, Transform)
-		SetPartTransform(What.z, Transform)
+			FractionRotatePartToTransform(What.x, Transform, TransformFraction)
+			FractionRotatePartToTransform(What.y, Transform, TransformFraction)
+			FractionRotatePartToTransform(What.z, Transform, TransformFraction)
+		#else
+			// For performance, set to target transform directly
+			SetPartTransform(What.x, Transform)
+			SetPartTransform(What.y, Transform)
+			SetPartTransform(What.z, Transform)
+		#end
 	#end
 
 	#declare Now = Clock_TransformDone;
@@ -238,37 +237,50 @@
 	EndMove()
 #end
 
-#macro Move(What, V)
-	TimedMove(What, V, ClockTicksForMove(V))
-#end
-
-#macro SlowMove(What, V)
-	#local PrevMoveSpeedup = MoveSpeed;
-	#declare MoveSpeed = 0.5;
-	
-	Move(What, V)
-	
-	#declare MoveSpeed = PrevMoveSpeedup;
-#end
-
-#macro FastMove(What, V)
-	#local PrevMoveSpeedup = MoveSpeed;
-	#declare MoveSpeed = 2;
-	
-	Move(What, V)
-	
-	#declare MoveSpeed = PrevMoveSpeedup;
-#end
-
-#macro Move6(What1, What2, V)
+#macro TimedMove6(What1, What2, V, TotalDuration)
 	#local StartMove = Now;
-	#local Clock_MoveDone = Now + ClockTicksForMove(V) - PauseDuration;
+	#local Clock_MoveDone = Now + TotalDuration - PauseDuration;
 
 	_Move(What1, V, Clock_MoveDone)
 	#declare Now = StartMove;
 	_Move(What2, V, Clock_MoveDone)
 
 	EndMove()
+#end
+
+#macro Move(What, V)
+	TimedMove(What, V, ClockTicksForMove(V))
+#end
+
+#macro SlowMove(What, V)
+	#local PrevMoveSpeed = MoveSpeed;
+	#declare MoveSpeed = 0.5;
+	
+	Move(What, V)
+	
+	#declare MoveSpeed = PrevMoveSpeed;
+#end
+
+#macro FastMove(What, V)
+	#local PrevMoveSpeed = MoveSpeed;
+	#declare MoveSpeed = 2;
+	
+	Move(What, V)
+	
+	#declare MoveSpeed = PrevMoveSpeed;
+#end
+
+#macro Move6(What1, What2, V)
+	TimedMove6(What1, What2, V, ClockTicksForMove(V))
+#end
+
+#macro SlowMove6(What1, What2, V)
+	#local PrevMoveSpeed = MoveSpeed;
+	#declare MoveSpeed = 0.5;
+
+	Move6(What1, What2, V)
+
+	#declare MoveSpeed = PrevMoveSpeed;
 #end
 
 #macro Move9(What1, What2, What3, V)
