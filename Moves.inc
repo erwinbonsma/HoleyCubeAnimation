@@ -18,11 +18,11 @@
 #declare DelayPause = 0;
 #declare DelayedPause = 0;
 
-// Tracks the progress of the move animation. It increases are more moves are parsed.
+// Tracks the progress of the move animation. It increases as more moves are parsed.
 #declare Now = 0;
 
-// The number of moves/rotations parsed sofar. After parsing all moves it equals the total number
-// of moves, irrespective of the clock value
+// The number of moves/rotations parsed sofar. After parsing all moves it equals the total
+// number of moves, irrespective of the clock value
 #declare NumMoves = 0;
 
 // The number of moves/rotations completed sofar. Its value depends on the clock value.
@@ -69,7 +69,8 @@
 
 			// Move acceleration
 			#local Accel = 8 * (Dist / Time);
-			#local AccelTime = (Accel*Time - sqrt(Accel*Accel*Time*Time - 4*Accel*Dist)) / (2*Accel);
+			#local AccelTime = (Accel*Time - sqrt(Accel*Accel*Time*Time - 4*Accel*Dist))
+			                   / (2*Accel);
 			#local MaxVelocity = AccelTime * Accel;
 
 			// Acceleration
