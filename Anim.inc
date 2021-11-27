@@ -2,7 +2,6 @@
 #include "quaternions.inc"
 
 #declare Now = 0;
-#declare Eps = 0.001;
 
 #macro MatrixFromTransform(T)
 	#local vX = <0, 0, 0>;
@@ -46,7 +45,7 @@
 	#local QT0 = QuaternionFromTransform(T0);
 	#local QT1 = QuaternionFromTransform(T1);
 
-	#if (Qsc(QDiff(QT0, QT1)) > Eps)
+	#if (Qsc(QDiff(QT0, QT1)) > 0)
 		#local QT = QLinear(QT0, QT1, fraction);
 
 		transform {
@@ -79,3 +78,4 @@
 // Returns 1 if tnow > t1
 // Otherwise returns lineair interpolation between boundary points
 #declare ramp = function(t0, t1, tnow) { (min(t1, max(t0, tnow)) - t0) / (t1 - t0) }
+
