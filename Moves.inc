@@ -1,6 +1,9 @@
 //----------------------------------------------------------------------------
 // Animation
 
+#include "vectors.inc"
+#include "quaternions.inc"
+
 #ifndef (PauseEnabled)
 	#declare PauseEnabled = 1;
 #end
@@ -36,6 +39,33 @@
 // The progress of the last/current rotation. A value from 0 to 1.
 #declare RotateFraction = 0;
 
+//----------------------------------------------------------------------------
+// Quaternion calculations
+
+#macro QuaternionFromTransform(T)
+	#local M = array[4];
+	#for (I, 0, 3)
+		#local M[I] = <0, 0, 0>;
+	#end
+
+	VectorsFromTransform(T, M[0], M[1], M[2], M[3])
+
+	QFromMatrix(M)
+#end
+
+#macro MatrixFromQuaternion(Q)
+	#local M = QToMatrix(Q);
+
+	matrix <
+		M[0].x, M[0].y, M[0].z,
+		M[1].x, M[1].y, M[1].z,
+		M[2].x, M[2].y, M[2].z,
+		M[3].x, M[3].y, M[3].z
+	>
+#end
+
+//----------------------------------------------------------------------------
+
 #macro FractionMovePart(PartNum, Delta)
 	#if (PartNum > 0)
 		#declare PartPosition[PartNum - 1] = PartPosition[PartNum - 1] + Delta;
@@ -44,17 +74,43 @@
 
 #macro FractionRotatePart(PartNum, VRotate, VCenter)
 	#if (PartNum > 0)
-		#ifndef (PartTempRotation[PartNum - 1])
-			#declare PartTempRotation[PartNum - 1] = transform { translate 0 }
+		#ifndef (PartRotation[PartNum - 1])
+			#declare PartRotation[PartNum - 1] = transform { translate 0 }
 		#end
-		#declare PartTempRotation[PartNum - 1] = 
+
+		#declare PartRotation[PartNum - 1] =
 			transform {
-				transform { PartTempRotation[PartNum - 1] }
+				transform { PartRotation[PartNum - 1] }
 				translate -VCenter
 				rotate VRotate
 				translate VCenter
 			}
 	#end // if
+#end
+
+#macro FractionRotatePartToTransform(PartNum, Transform, Fraction)
+	#if (PartNum > 0)
+		#ifndef (PartRotation[PartNum - 1])
+			#declare PartRotation[PartNum - 1] = transform { translate 0 }
+		#end
+
+		#local QT0 = QuaternionFromTransform(PartRotation[PartNum - 1]);
+		#local QT1 = QuaternionFromTransform(Transform);
+
+		#if (Qsc(QDiff(QT0, QT1)) > 0)
+			#local QT = QLinear(QT0, QT1, Fraction);
+
+			#declare PartRotation[PartNum - 1] = transform {
+				MatrixFromQuaternion(QT)
+			}
+		#end
+	#end // if
+#end
+
+#macro SetPartTransform(PartNum, Transform)
+	#if (PartNum > 0)
+		#declare PartRotation[PartNum - 1] = transform { Transform };
+	#end
 #end
 
 #macro _Move(What, V, Clock_MoveDone)
@@ -109,6 +165,27 @@
 	#end // if
 
 	#declare Now = Clock_RotateDone;
+#end
+
+#macro _RotateToTransform(What, Transform, Clock_MoveDone)
+	#if (Now < clock)
+		#local TransformFraction = 1;
+		#if (clock < Clock_MoveDone)
+			#local TransformFraction = (clock - Now) / (Clock_MoveDone - Now);
+			#declare NumMovesHandledFraction = TransformFraction;
+		#end
+
+		FractionRotatePartToTransform(What.x, Transform, TransformFraction)
+		FractionRotatePartToTransform(What.y, Transform, TransformFraction)
+		FractionRotatePartToTransform(What.z, Transform, TransformFraction)
+	#else
+		// For performance, set to target transform directly
+		SetPartTransform(What.x, Transform)
+		SetPartTransform(What.y, Transform)
+		SetPartTransform(What.z, Transform)
+	#end
+
+	#declare Now = Clock_TransformDone;
 #end
 
 #macro EndMovePause()
@@ -221,6 +298,14 @@
 
 #macro Rotate(What, VRotate, VCenter)
 	TimedRotate(What, VRotate, VCenter, ClockTicksForRotation(VRotate))
+#end
+
+#macro TimedRotateToTransform(What, Transform, TotalDuration)
+	#local Clock_TransformDone = Now + TotalDuration - PauseDuration;
+
+	_RotateToTransform(What, Transform, Clock_TransformDone)
+
+	EndMove()
 #end
 
 //------------------

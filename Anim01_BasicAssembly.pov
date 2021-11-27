@@ -1,6 +1,6 @@
 #include "Scene.inc"
 #include "Parts.inc"
-#include "Anim.inc"
+#include "Moves.inc"
 
 // Order parts by increasing weight
 #declare InitialPartPosition = array[NumParts];
@@ -156,21 +156,28 @@ camera {
 #declare MoveSpeed = 1;
 
 // Move to exploded pre-assembly
+#declare ClockStart = Now;
+#declare MaxNow = Now;
+
 #for (I, 0, NumParts - 1)
+  // Move parts in parallel, with delay of 4 clock ticks
+	#declare Now = ClockStart + I * 4;
+
 	#if (clock > Now)
 		#declare PartNum = AssemblyOrder[I];
-		#declare MoveV = PositionForPart(PartNum, 3) - PartPosition[PartNum];
-		#declare MoveDist = vlength(MoveV);
-		#declare T = ramp(Now, Now + MoveDist / MoveSpeed, clock);
+		#declare DeltaV = PositionForPart(PartNum, 3) - PartPosition[PartNum];
+		#declare DeltaT = ClockTicksForMove(DeltaV);
 
-		#declare PartPosition[PartNum] = PartPosition[PartNum] + T * MoveV;
-		#declare PartRotation[PartNum] = transform {
-			LerpRotation(PartRotation[PartNum], RotationForPart(PartNum), T)
-		};
+		#declare NowBefore = Now;
+		TimedMove(<PartNum + 1, 0, 0>, DeltaV, DeltaT)
+		#declare Now = NowBefore;
+		TimedRotateToTransform(<PartNum + 1, 0, 0>, RotationForPart(PartNum), DeltaT)
+
+		#declare MaxNow = max(Now, MaxNow);
 	#end
-
-	#declare Now = Now + 4;
 #end
+
+#declare Now = MaxNow;
 
 #for (I, 0, NumParts - 1)
 	object {
