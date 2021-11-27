@@ -75,6 +75,21 @@
 #declare PartConnector[11][0] = 2;
 #declare PartConnector[11][1] = 2 + 3;
 
+// Friendly names for the parts (with index +1 offset), for use in move definition
+#declare P_I_I =  1;
+#declare P_IxI =  6;
+#declare P_I_H =  2;
+#declare P_IxH =  4;
+#declare P_H_H = 10;
+#declare P_HxH =  9;
+#declare P_I_X =  3;
+#declare P_IxX =  7;
+#declare P_H_X =  8;
+#declare P_HxX = 11;
+#declare P_X_X =  5;
+#declare P_XxX = 12;
+
+
 #macro hex2rgb(hexString)
 	#macro hex2dec (hexChar)
 		#local V = asc(strupr(hexChar));
