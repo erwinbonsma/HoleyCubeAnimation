@@ -18,22 +18,19 @@
 	rotate x * 90
 }
 #declare InitialPartPosition[P_IxI - 1] = <0, -2, 0>;
+#declare InitialPartRotation[P_IxI - 1] = transform {
+	rotate x * 90
+}
 
 // Part 2: I H
 #declare InitialPartPosition[P_I_H - 1] = <0, -4, 0>;
-#declare InitialPartRotation[P_I_H - 1] = transform {
-	rotate x * 90
-}
 #declare InitialPartPosition[P_IxH - 1] = <0, -6, 0>;
 #declare InitialPartRotation[P_IxH - 1] = transform {
-	rotate y * 180
+	rotate z * 180
 }
 
 // Part 3: H H
 #declare InitialPartPosition[P_H_H - 1] = <4, 0, 0>;
-#declare InitialPartRotation[P_H_H - 1] = transform {
-	rotate x * 90
-}
 #declare InitialPartPosition[P_HxH - 1] = <4, -2, 0>;
 #declare InitialPartRotation[P_HxH - 1] = transform {
 	rotate x * 90
@@ -42,24 +39,19 @@
 // Part 4: I X
 #declare InitialPartPosition[P_I_X - 1] = <4, -4, 0>;
 #declare InitialPartRotation[P_I_X - 1] = transform {
-	rotate x * 90
-	rotate y * 180
+	rotate z * 180
 }
 #declare InitialPartPosition[P_IxX - 1] = <4, -6, 0>;
 #declare InitialPartRotation[P_IxX - 1] = transform {
-	rotate x * 90
-	rotate y * 180
+	rotate z * 180
 }
 
 // Part 5: H X
 #declare InitialPartPosition[P_H_X - 1] = <8, 0, 0>;
 #declare InitialPartRotation[P_H_X - 1] = transform {
-	rotate y * 180
+	rotate z * 180
 }
 #declare InitialPartPosition[P_HxX - 1] = <8, -2, 0>;
-#declare InitialPartRotation[P_HxX - 1] = transform {
-	rotate x * 90
-}
 
 // Part 6: X X
 #declare InitialPartPosition[P_X_X - 1] = <8, -4, 0>;

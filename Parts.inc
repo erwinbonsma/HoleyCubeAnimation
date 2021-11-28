@@ -50,28 +50,28 @@
 
 #declare PartConnector[0][0] = 0;
 #declare PartConnector[0][1] = 0;
-#declare PartConnector[1][0] = 0;
-#declare PartConnector[1][1] = 1;
-#declare PartConnector[2][0] = 2 + 3;
-#declare PartConnector[2][1] = 0;
+#declare PartConnector[1][0] = 0 + 3;
+#declare PartConnector[1][1] = 1 + 3;
+#declare PartConnector[2][0] = 2;
+#declare PartConnector[2][1] = 0 + 3;
 #declare PartConnector[3][0] = 1;
 #declare PartConnector[3][1] = 0 + 3;
 
 #declare PartConnector[4][0] = 2;
 #declare PartConnector[4][1] = 2;
-#declare PartConnector[5][0] = 0 + 3;
-#declare PartConnector[5][1] = 0;
-#declare PartConnector[6][0] = 2;
-#declare PartConnector[6][1] = 0;
+#declare PartConnector[5][0] = 0;
+#declare PartConnector[5][1] = 0 + 3;
+#declare PartConnector[6][0] = 2 + 3;
+#declare PartConnector[6][1] = 0 + 3;
 #declare PartConnector[7][0] = 2;
 #declare PartConnector[7][1] = 1 + 3;
 
 #declare PartConnector[8][0] = 1;
 #declare PartConnector[8][1] = 1 + 3;
-#declare PartConnector[9][0] = 1;
-#declare PartConnector[9][1] = 1;
-#declare PartConnector[10][0] = 1;
-#declare PartConnector[10][1] = 2;
+#declare PartConnector[9][0] = 1 + 3;
+#declare PartConnector[9][1] = 1 + 3;
+#declare PartConnector[10][0] = 1 + 3;
+#declare PartConnector[10][1] = 2 + 3;
 #declare PartConnector[11][0] = 2;
 #declare PartConnector[11][1] = 2 + 3;
 
@@ -123,6 +123,18 @@
 
 #macro RotationForPart(N)
 	transform {
+		#switch(mod(N, 4))
+			#case (1)
+				rotate x * 90
+			#break
+			#case (2)
+				rotate x * -90
+			#break
+			#case (3)
+				rotate x * 180
+			#break
+		#end
+
 		#for (I, 0, div(N, 4) - 1)
 			rotate x * 90
 			rotate z * 90
@@ -131,7 +143,7 @@
 #end
 
 #macro _CorePositionForPart(N)
-	<0, -1 + 2 * mod(N, 2), -1 + 2 * mod(div(N, 2), 2)>
+	<0, -1, -1>
 #end
 
 #macro PositionForPart(N, D)
@@ -150,8 +162,19 @@
 
 #macro Part_L1(N)
 	union {
-		box {
-			<-0.5, -0.5, -0.5>, <0.5, 0.5, 0.5>
+		difference {
+			box {
+				<-0.5, -0.5, -0.5>, <0.5, 0.5, 0.5>
+			}
+
+			// TEMP: Add markers to sides of box for checking orientation
+			#local R = 1/6;
+			cylinder {
+				<0, 0, -0.4>, <0, 0, -0.51>, R
+			}
+			box {
+				<-R, -0.4, -R>, <R, -0.51, R>
+			}
 		}
 		#for (I, 0, 1)
 			object {
