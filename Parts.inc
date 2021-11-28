@@ -147,3 +147,18 @@
 		RotationForPart(N)
 	}
 #end
+
+#macro Part_L1(N)
+	union {
+		box {
+			<-0.5, -0.5, -0.5>, <0.5, 0.5, 0.5>
+		}
+		#for (I, 0, 1)
+			object {
+				Connector[mod(PartConnector[N][I], 3)]
+				rotate x * 90 * div(PartConnector[N][I], 3)
+				translate x * (-1 + 2 * I)
+			}
+		#end
+	}
+#end

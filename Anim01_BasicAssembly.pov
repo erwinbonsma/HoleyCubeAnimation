@@ -1,7 +1,10 @@
-#include "Scene.inc"
+#include "Globals.inc"
 #include "Parts.inc"
 #include "Moves.inc"
 #include "Anim.inc"
+
+// Clock: 0..85
+// Frames: 0..2125
 
 // Order parts by increasing weight
 #declare InitialPartPosition = array[NumParts];
@@ -79,23 +82,8 @@
 #declare AssemblyOrder[10] = 3;
 #declare AssemblyOrder[11] = 5;
 
-#macro Part(N)
-	union {
-		box {
-			<-0.5, -0.5, -0.5>, <0.5, 0.5, 0.5>
-		}
-		#for (I, 0, 1)
-			object {
-				Connector[mod(PartConnector[N][I], 3)]
-				rotate x * 90 * div(PartConnector[N][I], 3)
-				translate x * (-1 + 2 * I)
-			}
-		#end
-	}
-#end
-
 #declare CameraPosition = <0, 12, -30>;
-#declare CameraLookAt = <-15, 0, 10>;
+#declare CameraLookAt = <-18, 0, 9>;
 
 MoveVector(CameraLookAt, <0, 0, 10>, 4)
 
@@ -115,8 +103,6 @@ MoveVector(CameraPosition, <-23, 15, -25> * 1.2, 7)
 		#declare PartRotation[I] = transform {}
 	#end
 #end
-
-ResetPuzzleTransform()
 
 //--------------------------------------
 // Move to exploded pre-assembly
@@ -200,37 +186,9 @@ SlowMove6(<P_X_X, P_IxH, P_HxX>, <P_I_X, P_IxI, P_HxH>, x * 2)
 RotatePuzzle(<0, 360, 0>, 8)
 RotatePuzzle(<360, 0, 0>, 8)
 
-// Place camera based on position and look at vector
+#include "Scene.inc"
 
-#declare CameraV = CameraPosition - CameraLookAt;
-#declare CameraD = vlength(CameraV);
-#declare CameraD2 = sqrt(pow(CameraD, 2) - pow(CameraV.y, 2));
-
-camera {
-	perspective
-	location <0, 0, -CameraD>
-	right x * 1
-	up y * 9/16
-	angle 30
-	look_at <0, 0, 0>
-
-	rotate x * degrees(asin(CameraV.y / CameraD))
-	rotate y * -degrees(asin(CameraV.x / CameraD2))
-
-	translate  CameraLookAt
-}
-
-// Show puzzle parts
-
-#for (I, 0, NumParts - 1)
-	object {
-		Part(I)
-		pigment { color rgb PartColor[I] }
-		transform { PartRotation[I] }
-		translate PartPosition[I]
-		transform { PuzzleTransformForPart(I) }
-	}
-#end
+ShowPuzzleL1()
 
 //sphere {
 //	<0, 0, 0>, 1.5

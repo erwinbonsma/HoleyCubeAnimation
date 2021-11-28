@@ -2,11 +2,12 @@
 
 #local AreaLights = 1;
 
-global_settings {
-	ambient_light rgb <0.666667, 0.666667, 0.666667>
-	irid_wavelength rgb <0.999767, 0.147190, 0.000000>
-	assumed_gamma 1.0
-}
+#ifndef (CameraLookAt)
+	#declare CameraLookAt = <0, 0, 0>;
+#end
+#ifndef (CameraPosition)
+	#declare CameraPosition = -z * 40;
+#end
 
 light_source {
 	-z * 60
@@ -41,3 +42,35 @@ light_source {
 sky_sphere {
 	pigment { color Black }
 }
+
+// Place camera based on position and look at vector
+
+#declare CameraV = CameraPosition - CameraLookAt;
+#declare CameraD = vlength(CameraV);
+#declare CameraD2 = sqrt(pow(CameraD, 2) - pow(CameraV.y, 2));
+
+camera {
+	perspective
+	location <0, 0, -CameraD>
+	right x * 1
+	up y * 9/16
+	angle 30
+	look_at <0, 0, 0>
+
+	rotate x * degrees(asin(CameraV.y / CameraD))
+	rotate y * -degrees(asin(CameraV.x / CameraD2))
+
+	translate  CameraLookAt
+}
+
+#macro ShowPuzzleL1()
+	#for (I, 0, NumParts - 1)
+		object {
+			Part_L1(I)
+			pigment { color rgb PartColor[I] }
+			transform { PartRotation[I] }
+			translate PartPosition[I]
+			transform { PuzzleTransformForPart(I) }
+		}
+	#end
+#end
