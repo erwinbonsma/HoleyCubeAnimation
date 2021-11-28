@@ -116,6 +116,8 @@ MoveVector(CameraPosition, <-23, 15, -25> * 1.2, 7)
 	#end
 #end
 
+ResetPuzzleTransform()
+
 //--------------------------------------
 // Move to exploded pre-assembly
 
@@ -193,6 +195,11 @@ SlowMove6(<P_XxX, P_I_H, P_H_X>, <P_IxX, P_I_I, P_H_H>, -x * 2)
 #declare Now = Now0;
 SlowMove6(<P_X_X, P_IxH, P_HxX>, <P_I_X, P_IxI, P_HxH>, x * 2)
 
+// Rotate assembled puzzle
+
+RotatePuzzle(<0, 360, 0>, 8)
+RotatePuzzle(<360, 0, 0>, 8)
+
 // Place camera based on position and look at vector
 
 #declare CameraV = CameraPosition - CameraLookAt;
@@ -221,6 +228,7 @@ camera {
 		pigment { color rgb PartColor[I] }
 		transform { PartRotation[I] }
 		translate PartPosition[I]
+		transform { PuzzleTransformForPart(I) }
 	}
 #end
 

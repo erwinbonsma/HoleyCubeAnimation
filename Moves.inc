@@ -39,6 +39,10 @@
 // The progress of the last/current rotation. A value from 0 to 1.
 #declare RotateFraction = 0;
 
+#macro ClockFraction(Min, Max)
+	(max(0, min(Max-Min, clock-Min)) / (Max-Min))
+#end
+
 //----------------------------------------------------------------------------
 // Quaternion calculations
 
