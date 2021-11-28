@@ -184,14 +184,14 @@
 				<-0.5, -0.5, -0.5>, <0.5, 0.5, 0.5>
 			}
 
-			// TEMP: Add markers to sides of box for checking orientation
-			#local R = 1/6;
-			cylinder {
-				<0, 0, -0.4>, <0, 0, -0.51>, R
-			}
-			box {
-				<-R, -0.4, -R>, <R, -0.51, R>
-			}
+//			// TEMP: Add markers to sides of box for checking orientation
+//			#local R = 1/6;
+//			cylinder {
+//				<0, 0, -0.4>, <0, 0, -0.51>, R
+//			}
+//			box {
+//				<-R, -0.4, -R>, <R, -0.51, R>
+//			}
 		}
 		#for (I, 0, 1)
 			object {
