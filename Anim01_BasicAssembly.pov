@@ -210,8 +210,8 @@ camera {
 	perspective
 	location <0, 0, -CameraD>
 	right x * 1
-	up y * 3/4
-	angle 20
+	up y * 9/16
+	angle 30
 	look_at <0, 0, 0>
 
 	rotate x * degrees(asin(CameraV.y / CameraD))
