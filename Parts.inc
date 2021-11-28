@@ -160,6 +160,23 @@
 	}
 #end
 
+// Rotation for L2 parts so that:
+// - in (nearly) all sides of the L2 cube, all four center cubes are oriented 
+//   differently
+// - each part-type has a big connector to it attached four times
+#declare PartRotation_L2 = array[12];
+#declare PartRotation_L2[0] = <90, 0, 0>;
+#declare PartRotation_L2[1] = <0, 0, 180>;
+#declare PartRotation_L2[2] = <180, 0, 0>;
+//#declare PartRotation_L2[3] = <180, 0, 0>;
+#declare PartRotation_L2[4] = <90, 0, 0>;
+#declare PartRotation_L2[6] = <0, 180, 0>;
+#declare PartRotation_L2[7] = <180, 0, 0>;
+#declare PartRotation_L2[8] = <90, 0, 0>;
+#declare PartRotation_L2[9] = <90, 0, 0>;
+#declare PartRotation_L2[10] = <180, 0, 0>;
+//#declare PartRotation_L2[11] = <0, 180, 0>;
+
 #macro Part_L1(N)
 	union {
 		difference {
