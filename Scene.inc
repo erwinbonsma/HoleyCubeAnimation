@@ -10,3 +10,7 @@ light_source {
 	<-38, 80, -20>
 	rgb <1.000000, 1.000000, 1.000000> * 1.0
 }
+
+sky_sphere {
+	pigment { color Black }
+}
