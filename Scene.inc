@@ -63,14 +63,16 @@ camera {
 	translate  CameraLookAt
 }
 
-#macro ShowPuzzleL1()
-	#for (I, 0, NumParts - 1)
-		object {
-			Part_L1(I)
-			pigment { color rgb PartColor[I] }
-			transform { PartRotation[I] }
-			translate PartPosition[I]
-			transform { PuzzleTransformForPart(I) }
-		}
-	#end
+#macro PuzzleL1()
+	union {
+		#for (I, 0, NumParts - 1)
+			object {
+				Part_L1(I)
+				pigment { color rgb PartColor[I] }
+				transform { PartRotation[I] }
+				translate PartPosition[I]
+				transform { PuzzleTransformForPart(I) }
+			}
+		#end
+	}
 #end

@@ -1,4 +1,4 @@
-#include "Scene.inc"
+#include "Globals.inc"
 #include "Parts.inc"
 #include "Moves.inc"
 #include "Anim.inc"
@@ -14,13 +14,22 @@
 #end
 
 #for (I, 0, NumParts - 1)
+	#local PartsMapping = array[NumParts] {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11};
+
+	#ifdef (PartRotation_L2[I])
+		RotatePartsMapping(PartsMapping, -PartRotation_L2[I])
+	#end
+
 	union {
-		union {
-			ShowPuzzleL1()
-			transform {
-				RotationForPart(I)
-				inverse
-			}
+		object {
+			PuzzleL1()
+// TODO: Reinstroduce
+// - Equal connector distribution undone by this transform
+// - Maximum veriation in L1 cube orientations per L2 cube face
+//			transform {
+//				RotationForPart(I)
+//				inverse
+//			}
 			#ifdef (PartRotation_L2[I])
 				transform {
 					rotate PartRotation_L2[I]
@@ -28,18 +37,28 @@
 			#end
 		}
 
-		union {
-			#for (J, 0, 1)
-				object {
-					Connector[mod(PartConnector[I][J], 3)]
+		#for (J, 0, 1)
+			#for (H, 0, 1)
+				difference {
+					object {
+						Connector[mod(PartConnector[I][J], 3)]
+					}
+					plane {
+						z * (-1 + H * 2), 0
+					}
+
 					rotate x * 90 * div(PartConnector[I][J], 3)
 					translate x * (-1 + 2 * J)
+					scale 3
+
+					pigment {
+						color PartColor[PartsMapping[
+							AttachPointForL2Connector(I, J, H)
+						]]
+					}
 				}
 			#end
-			pigment { color PartColor[I] }
-
-			scale 3
-		}
+		#end
 
 		transform { RotationForPart(I) }
 

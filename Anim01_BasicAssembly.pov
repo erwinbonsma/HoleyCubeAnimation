@@ -180,9 +180,5 @@ RotatePuzzle(<360, 0, 0>, 8)
 
 #include "Scene.inc"
 
-ShowPuzzleL1()
+PuzzleL1()
 
-//sphere {
-//	<0, 0, 0>, 1.5
-//	pigment { color White }
-//}

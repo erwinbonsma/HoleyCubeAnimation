@@ -3,6 +3,8 @@
 
 #declare NumParts = 12;
 
+// The connectors are oriented such that they attach to the center cube
+// in the same place (at zero Y and pos/neg Z)
 #declare Connector = array[3];
 
 #declare Connector[0] = union {
@@ -201,4 +203,59 @@
 			}
 		#end
 	}
+#end
+
+#macro ResetPartsMapping(Mapping)
+	#for (I, 0, NumParts - 1)
+		#define Mapping[I] = I;
+	#end
+#end
+
+#macro _RotateMapping(Mapping, TransferTable, Angle)
+	#while (Angle < 0)
+		#local Angle = Angle + 360;
+	#end
+	#while (Angle > 0)
+		#for (I, 0, NumParts - 1)
+			#declare Mapping[I] = TransferTable[Mapping[I]];
+		#end
+		#local Angle = Angle - 90;
+	#end
+#end
+
+#macro RotatePartsMapping(Mapping, RotV)
+	// Loops: 0-1-3-2, 6-11-7-9, 4-10-5-8
+	#local TransferTableRotateX = array[NumParts] {
+		1, 3, 0, 2, 10, 8, 11, 9, 4, 6, 5, 7
+	}
+	// Loops: 4-6-7-5, 0-9-2-8, 1-11-3-10
+	#local TransferTableRotateY = array[NumParts] {
+		9, 11, 8, 10, 6, 4, 7, 5, 0, 2, 1, 3
+	}
+
+	// Loops: 8-9-11-10, 0-6-1-4, 2-7-3-5
+	#local TransferTableRotateZ = array[NumParts] {
+		6, 4, 7, 5, 0, 2, 1, 3, 9, 11, 8, 10
+	}
+
+	_RotateMapping(Mapping, TransferTableRotateX, RotV.x)
+	_RotateMapping(Mapping, TransferTableRotateY, RotV.y)
+	_RotateMapping(Mapping, TransferTableRotateZ, RotV.z)
+#end
+
+// Returns the part number of the L1-Cube where to attach the connector for
+// L2 part, where:
+// - PartNum in [0, 11] - Identifies the L2 part to construct
+// - PartEnd in [0, 1] - Identifies the side where to attach the connector
+// - ConnectorHalf in [0, 1] - Identifies the connector half
+#macro AttachPointForL2Connector(PartNum, PartEnd, ConnectorHalf)
+	#local ConnectorAttachPoints = array[8] {
+		4, 5, 10, 8, 6, 7, 11, 9
+	}
+
+	#local AttachPoint = ConnectorAttachPoints[
+		PartEnd * 4 + div(PartConnector[PartNum][PartEnd], 3) * 2 + ConnectorHalf
+	];
+
+	AttachPoint
 #end
