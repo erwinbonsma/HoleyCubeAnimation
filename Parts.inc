@@ -123,19 +123,14 @@
 #declare PartColor[10] = hex2rgb("ff77a8");
 #declare PartColor[11] = hex2rgb("065ab5");
 
+#macro XRotationForPart(N)
+	#local Angles = array[4] {0, 90, -90, 180};
+	Angles[mod(N, 4)]
+#end
+
 #macro RotationForPart(N)
 	transform {
-		#switch(mod(N, 4))
-			#case (1)
-				rotate x * 90
-			#break
-			#case (2)
-				rotate x * -90
-			#break
-			#case (3)
-				rotate x * 180
-			#break
-		#end
+		rotate x * XRotationForPart(N)
 
 		#for (I, 0, div(N, 4) - 1)
 			rotate x * 90
@@ -223,6 +218,23 @@
 	#end
 #end
 
+#macro OutputMapping(Mapping)
+	#local S = "";
+	#for (I, 0, NumParts - 1)
+		#if (I > 0)
+			#local S = concat(S, ", ");
+		#end
+		#local S = concat(S, str(Mapping[I], 0, 0));
+	#end
+	#debug concat(S, "\n")
+#end
+
+// Mapping: From Part to Position
+//
+// Although this mapping is more awkward to use (it requires PartAtPosition
+// to determine what part is at a given position), it has the advantage that
+// it can be easily updated, as _RotateMapping can update each array element
+// independently.
 #macro RotatePartsMapping(Mapping, RotV)
 	// Loops: 0-1-3-2, 6-11-7-9, 4-10-5-8
 	#local TransferTableRotateX = array[NumParts] {
@@ -230,7 +242,7 @@
 	}
 	// Loops: 4-6-7-5, 0-9-2-8, 1-11-3-10
 	#local TransferTableRotateY = array[NumParts] {
-		9, 11, 8, 10, 6, 4, 7, 5, 0, 2, 1, 3
+		8, 10, 9, 11, 5, 7, 4, 6, 2, 0, 3, 1
 	}
 
 	// Loops: 8-9-11-10, 0-6-1-4, 2-7-3-5
@@ -241,6 +253,14 @@
 	_RotateMapping(Mapping, TransferTableRotateX, RotV.x)
 	_RotateMapping(Mapping, TransferTableRotateY, RotV.y)
 	_RotateMapping(Mapping, TransferTableRotateZ, RotV.z)
+#end
+
+#macro PartAtPosition(Mapping, Position)
+	#for (I, 0, NumParts - 1)
+		#if (Mapping[I] = Position)
+			I
+		#end
+	#end
 #end
 
 // Returns the part number of the L1-Cube where to attach the connector for
