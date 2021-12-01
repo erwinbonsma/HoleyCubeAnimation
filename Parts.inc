@@ -165,12 +165,12 @@
 #declare PartRotation_L2[0] = <90, 0, 0>;
 #declare PartRotation_L2[1] = <0, 0, 180>;
 #declare PartRotation_L2[2] = <180, 0, 0>;
-//#declare PartRotation_L2[3] = <180, 0, 0>;
+#declare PartRotation_L2[3] = <90, 180, 0>;
 #declare PartRotation_L2[4] = <90, 0, 0>;
 #declare PartRotation_L2[6] = <0, 180, 0>;
 #declare PartRotation_L2[7] = <180, 0, 0>;
 #declare PartRotation_L2[8] = <90, 0, 0>;
-#declare PartRotation_L2[9] = <90, 0, 0>;
+#declare PartRotation_L2[9] = <-90, 0, 0>;
 #declare PartRotation_L2[10] = <180, 0, 0>;
 //#declare PartRotation_L2[11] = <0, 180, 0>;
 

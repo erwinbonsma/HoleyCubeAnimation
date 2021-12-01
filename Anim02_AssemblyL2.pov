@@ -3,7 +3,7 @@
 #include "Moves.inc"
 #include "Anim.inc"
 
-#declare CameraPosition = <-23, 15, -25> * 1.2 * 2;
+#declare CameraPosition = <-23, 15, -25> * 1.2 * 2.5;
 
 #include "Scene.inc"
 
@@ -34,7 +34,6 @@
 
 			rotate InvPartRotation
 			rotate -x * XRotationForPart(I)
-			// TODO: Restore/ensure equal connector distribution
 			#ifdef (PartRotation_L2[I])
 				transform {
 					rotate PartRotation_L2[I]
@@ -70,6 +69,6 @@
 
 		transform { RotationForPart(I) }
 
-		translate PositionForPart(I, 7)
+		translate PositionForPart(I, 9)
 	}
 #end
