@@ -1,6 +1,9 @@
 // Defines basic puzzle parts (shape and colors) and their assembly
 #include "vectors.inc"
 
+#ifndef (PARTS_INCLUDED)
+#declare PARTS_INCLUDED = 1;
+
 #declare NumParts = 12;
 
 // The connectors are oriented such that they attach to the center cube
@@ -157,39 +160,21 @@
 	}
 #end
 
-// Rotation for L2 parts so that:
-// - in (nearly) all sides of the L2 cube, all four center cubes are oriented 
-//   differently
-// - each part-type has a big connector to it attached four times
-#declare PartRotation_L2 = array[12];
-#declare PartRotation_L2[0] = <90, 0, 0>;
-#declare PartRotation_L2[1] = <0, 0, 180>;
-#declare PartRotation_L2[2] = <180, 0, 0>;
-#declare PartRotation_L2[3] = <90, 180, 0>;
-#declare PartRotation_L2[4] = <90, 0, 0>;
-#declare PartRotation_L2[6] = <0, 180, 0>;
-#declare PartRotation_L2[7] = <180, 0, 0>;
-#declare PartRotation_L2[8] = <90, 0, 0>;
-#declare PartRotation_L2[9] = <-90, 0, 0>;
-#declare PartRotation_L2[10] = <180, 0, 0>;
-//#declare PartRotation_L2[11] = <0, 180, 0>;
-
 #macro Part_L1(N)
 	union {
 		difference {
+			#local R=1/6;
 			box {
 				<-0.5, -0.5, -0.5>, <0.5, 0.5, 0.5>
 			}
-
-//			// TEMP: Add markers to sides of box for checking orientation
-//			#local R = 1/6;
-//			cylinder {
-//				<0, 0, -0.4>, <0, 0, -0.51>, R
-//			}
+			box {
+				<-R, -R, -0.4>, <R, R, -0.51>
+			}
 //			box {
 //				<-R, -0.4, -R>, <R, -0.51, R>
 //			}
 		}
+
 		#for (I, 0, 1)
 			object {
 				Connector[mod(PartConnector[N][I], 3)]
@@ -197,85 +182,9 @@
 				translate x * (-1 + 2 * I)
 			}
 		#end
+
+		pigment { color rgb PartColor[N] }
 	}
 #end
 
-#macro ResetPartsMapping(Mapping)
-	#for (I, 0, NumParts - 1)
-		#define Mapping[I] = I;
-	#end
-#end
-
-#macro _RotateMapping(Mapping, TransferTable, Angle)
-	#while (Angle < 0)
-		#local Angle = Angle + 360;
-	#end
-	#while (Angle > 0)
-		#for (I, 0, NumParts - 1)
-			#declare Mapping[I] = TransferTable[Mapping[I]];
-		#end
-		#local Angle = Angle - 90;
-	#end
-#end
-
-#macro OutputMapping(Mapping)
-	#local S = "";
-	#for (I, 0, NumParts - 1)
-		#if (I > 0)
-			#local S = concat(S, ", ");
-		#end
-		#local S = concat(S, str(Mapping[I], 0, 0));
-	#end
-	#debug concat(S, "\n")
-#end
-
-// Mapping: From Part to Position
-//
-// Although this mapping is more awkward to use (it requires PartAtPosition
-// to determine what part is at a given position), it has the advantage that
-// it can be easily updated, as _RotateMapping can update each array element
-// independently.
-#macro RotatePartsMapping(Mapping, RotV)
-	// Loops: 0-1-3-2, 6-11-7-9, 4-10-5-8
-	#local TransferTableRotateX = array[NumParts] {
-		1, 3, 0, 2, 10, 8, 11, 9, 4, 6, 5, 7
-	}
-	// Loops: 4-6-7-5, 0-9-2-8, 1-11-3-10
-	#local TransferTableRotateY = array[NumParts] {
-		8, 10, 9, 11, 5, 7, 4, 6, 2, 0, 3, 1
-	}
-
-	// Loops: 8-9-11-10, 0-6-1-4, 2-7-3-5
-	#local TransferTableRotateZ = array[NumParts] {
-		6, 4, 7, 5, 0, 2, 1, 3, 9, 11, 8, 10
-	}
-
-	_RotateMapping(Mapping, TransferTableRotateX, RotV.x)
-	_RotateMapping(Mapping, TransferTableRotateY, RotV.y)
-	_RotateMapping(Mapping, TransferTableRotateZ, RotV.z)
-#end
-
-#macro PartAtPosition(Mapping, Position)
-	#for (I, 0, NumParts - 1)
-		#if (Mapping[I] = Position)
-			I
-		#end
-	#end
-#end
-
-// Returns the part number of the L1-Cube where to attach the connector for
-// L2 part, where:
-// - PartNum in [0, 11] - Identifies the L2 part to construct
-// - PartEnd in [0, 1] - Identifies the side where to attach the connector
-// - ConnectorHalf in [0, 1] - Identifies the connector half
-#macro AttachPointForL2Connector(PartNum, PartEnd, ConnectorHalf)
-	#local ConnectorAttachPoints = array[8] {
-		4, 5, 10, 8, 6, 7, 11, 9
-	}
-
-	#local AttachPoint = ConnectorAttachPoints[
-		PartEnd * 4 + div(PartConnector[PartNum][PartEnd], 3) * 2 + ConnectorHalf
-	];
-
-	AttachPoint
-#end
+#end // ifdef (PARTS_INCLUDED)

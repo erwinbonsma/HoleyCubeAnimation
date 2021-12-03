@@ -1,5 +1,5 @@
 #include "Globals.inc"
-#include "Parts.inc"
+#include "PartsL2.inc"
 #include "Moves.inc"
 #include "Anim.inc"
 
@@ -17,15 +17,16 @@
 	<0, 0, 0>, <-90, -90, 0>, <90, 0, 90>
 }
 
-#for (I, 0, NumParts - 1)
+#for (I, 0, -11)
 	#local PartsMapping = array[NumParts] {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11};
+	#local Twisted = array[NumParts] {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
 	#local InvPartRotation = InvPartRotations[div(I, 4)];
 
-	RotatePartsMapping(PartsMapping, InvPartRotation)
-	RotatePartsMapping(PartsMapping, -x * XRotationForPart(I))
+	RotatePartsMapping(PartsMapping, Twisted, InvPartRotation)
+	RotatePartsMapping(PartsMapping, Twisted, -x * XRotationForPart(I))
 
 	#ifdef (PartRotation_L2[I])
-		RotatePartsMapping(PartsMapping, PartRotation_L2[I])
+		RotatePartsMapping(PartsMapping, Twisted, PartRotation_L2[I])
 	#end
 
 	union {
@@ -51,7 +52,7 @@
 						z * (-1 + H * 2), 0
 					}
 
-					rotate x * 90 * div(PartConnector[I][J], 3)
+					rotate x * 90 * (div(PartConnector[I][J], 3) + J * 2)
 					translate x * (-1 + 2 * J)
 					scale 3
 
@@ -67,6 +68,40 @@
 			#end
 		#end
 
+		transform { RotationForPart(I) }
+
+		translate PositionForPart(I, 9)
+	}
+#end
+
+#for (I, 0, 3)
+	union {
+		#for (J, 0, NumParts - 1)
+			object {
+				Part_L2[I * NumParts + J]
+
+				transform { RotationForPart(J) }
+				translate PositionForPart(J, 1)
+			}
+		#end
+
+		// Undo the normal rotation to place the L2 part correctly. This way all L1 cubes
+		// will in principle be oriented the same in the assembled puzzle. This (together
+		// with PartRotation_LW) ensures that 1) an equal number L1 parts of each type
+		// (four) have a big L2 connector attached to it. (Otherwise only a subset of
+		// parts would have connectors attached.)
+		transform { RotationForPart(I) inverse }
+
+		// Rotate L1 cube such that 1) holds (see above) and that 2) all L1 cubes
+		// within an L2 cube face are nevertheless oriented differently.
+		#ifdef (PartRotation_L2[I])
+			rotate PartRotation_L2[I]
+		#end
+
+		// Rotate L2 part so that they all assemble into an L2 cube.
+		//
+		// Note: the placement of the L2 connectors to the L1 parts is aware of and takes
+		// into account the above transforms so that this assembly works.
 		transform { RotationForPart(I) }
 
 		translate PositionForPart(I, 9)
