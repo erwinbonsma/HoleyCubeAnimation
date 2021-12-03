@@ -108,19 +108,10 @@
 
 	RotatePartsMapping(PartsMapping, Twisted, InvPartRotation)
 	RotatePartsMapping(PartsMapping, Twisted, -x * XRotationForPart(I))
-	#debug "Twisted: "
-	OutputMapping(Twisted)
 
 	#ifdef (PartRotation_L2[I])
 		RotatePartsMapping(PartsMapping, Twisted, PartRotation_L2[I])
-		#debug "Twisted: "
-		OutputMapping(Twisted)
 	#end
-
-	#debug "Mapping: "
-	OutputMapping(PartsMapping)
-	#debug "Twisted: "
-	OutputMapping(Twisted)
 
 	#for (J, 0, NumParts - 1)
 		#local PartType = PartsMapping[J];
@@ -138,18 +129,27 @@
 			#local Index = I * NumParts + PartType;
 			#declare Part_L2_AttachPoint[Index] = 1; // TODO
 			#declare Part_L2[Index] = union {
-				object { Part_L2[Index] }
-
-				box {
-					<-0.5, -0.5, -0.5>, <0.5, 0.5, -3.5>
-
-					pigment { color PartColor[PartType] }
-
-					// TODO: This works when the L1 puzzle is not rotated. When it is,
-					// it may require a per-side adjustment. Can this be determined from
-					// the mapping or does it require separate tracking?
-					rotate x * 90 * -mod(H + Twisted[AP], 2)
+				object {
+					Part_L2[Index]
+					rotate x * 90 * mod(H + Twisted[AP], 2)
 				}
+
+				difference {
+					object {
+						Connector[mod(PartConnector[I][J], 3)]
+					}
+					plane { -z, 0 }
+					translate z * 1/3
+					rotate x * 90 * (2 * mod(H + Twisted[AP], 2) - 1)
+
+					scale 3
+					translate x * 2
+					rotate y * 90
+				}
+
+				pigment { color PartColor[PartType] }
+
+				rotate x * 90 * -mod(H + Twisted[AP], 2)
 			}
 		#end
 	#end
