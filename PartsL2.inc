@@ -22,9 +22,15 @@
 		#local Angle = Angle + 360;
 	#end
 	#while (Angle > 0)
+		#local TwistedNew = array[NumParts];
+		#local MappingNew = array[NumParts];
 		#for (I, 0, NumParts - 1)
-			#declare Twisted[I] = mod(Twisted[I] + TwistedTable[I], 2);
-			#declare Mapping[I] = TransferTable[Mapping[I]];
+			#local TwistedNew[I] = mod(Twisted[TransferTable[I]] + TwistedTable[I], 2);
+			#local MappingNew[I] = Mapping[TransferTable[I]];
+		#end
+		#for (I, 0, NumParts - 1)
+			#declare Twisted[I] = TwistedNew[I];
+			#declare Mapping[I] = MappingNew[I];
 		#end
 		#local Angle = Angle - 90;
 	#end
@@ -41,31 +47,23 @@
 	#debug concat(S, "\n")
 #end
 
-// Mapping: From Part to Position
-//
-// Although this mapping is more awkward to use (it requires PartAtPosition
-// to determine what part is at a given position), it has the advantage that
-// it can be easily updated, as _RotateMapping can update each array element
-// independently.
+// Mapping: From Position to Part
 #macro RotatePartsMapping(Mapping, Twisted, RotV)
 	// Loops: 0-1-3-2, 6-11-7-9, 4-10-5-8
 	#local TransferTableX = array[NumParts] {
-		1, 3, 0, 2, 10, 8, 11, 9, 4, 6, 5, 7
+		2, 0, 3, 1, 8, 10, 9, 11, 5, 7, 4, 6
 	}
 	// Loops: 4-6-7-5, 0-9-2-8, 1-11-3-10
 	#local TransferTableY = array[NumParts] {
-		8, 10, 9, 11, 5, 7, 4, 6, 2, 0, 3, 1
+		9, 11, 8, 10, 6, 4, 7, 5, 0, 2, 1, 3
 	}
 	// Loops: 8-9-11-10, 0-6-1-4, 2-7-3-5
 	#local TransferTableZ = array[NumParts] {
-		6, 4, 7, 5, 0, 2, 1, 3, 9, 11, 8, 10
+		4, 6, 5, 7, 1, 3, 0, 2, 10, 8, 11, 9
 	}
 
 	// These tables indicate the positions where the part "twisted" orientation flips
 	// as a result of the rotation.
-//	#local TwistedTableX = array[NumParts] { 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1 };
-//	#local TwistedTableY = array[NumParts] { 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0 };
-//	#local TwistedTableZ = array[NumParts] { 0, 0, 0, 0, 1, 1, 1, 1, 0, 0, 0, 0 };
 	#local TwistedTableX = array[NumParts] { 0, 0, 0, 0, 1, 1, 1, 1, 0, 0, 0, 0 };
 	#local TwistedTableY = array[NumParts] { 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1 };
 	#local TwistedTableZ = array[NumParts] { 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0 };
@@ -73,14 +71,6 @@
 	_RotateMapping(Mapping, Twisted, TransferTableX, TwistedTableX, RotV.x)
 	_RotateMapping(Mapping, Twisted, TransferTableY, TwistedTableY, RotV.y)
 	_RotateMapping(Mapping, Twisted, TransferTableZ, TwistedTableZ, RotV.z)
-#end
-
-#macro PartAtPosition(Mapping, Position)
-	#for (I, 0, NumParts - 1)
-		#if (Mapping[I] = Position)
-			I
-		#end
-	#end
 #end
 
 // Returns the part number of the L1-Cube where to attach the connector for
@@ -109,7 +99,7 @@
 #local InvPartRotations = array[3] {
 	<0, 0, 0>, <-90, -90, 0>, <90, 0, 90>
 }
-#for (I, 0, 3)
+#for (I, 0, NumParts - 1)
 	#local PartsMapping = array[NumParts] {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11};
 	#local Twisted = array[NumParts] {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
 	#local InvPartRotation = InvPartRotations[div(I, 4)];
@@ -144,7 +134,7 @@
 		#for (H, 0, 1)
 			#local AP = AttachPointForL2Connector(I, J, H);
 			#debug concat("I=", str(I,0,0), ", J=", str(J,0,0), ", H=", str(H,0,0), ", AP=", str(AP,0,0), "\n")
-			#local PartType = (PartAtPosition(PartsMapping, AP));
+			#local PartType = PartsMapping[AP];
 			#local Index = I * NumParts + PartType;
 			#declare Part_L2_AttachPoint[Index] = 1; // TODO
 			#declare Part_L2[Index] = union {

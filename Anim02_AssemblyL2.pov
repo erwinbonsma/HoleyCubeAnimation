@@ -58,10 +58,7 @@
 
 					pigment {
 						color PartColor[
-							PartAtPosition(
-								PartsMapping,
-								AttachPointForL2Connector(I, J, H)
-							)
+							PartsMapping[AttachPointForL2Connector(I, J, H)]
 						]
 					}
 				}
@@ -74,7 +71,7 @@
 	}
 #end
 
-#for (I, 0, 3)
+#for (I, 0, NumParts - 1)
 	union {
 		#for (J, 0, NumParts - 1)
 			object {
