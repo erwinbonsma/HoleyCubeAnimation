@@ -131,25 +131,26 @@
 			#declare Part_L2[Index] = union {
 				object {
 					Part_L2[Index]
-					rotate x * 90 * mod(H + Twisted[AP], 2)
 				}
 
+				// L2 connector
+				#local Twist = mod(H + Twisted[AP], 2);
 				difference {
 					object {
 						Connector[mod(PartConnector[I][J], 3)]
 					}
 					plane { -z, 0 }
 					translate z * 1/3
-					rotate x * 90 * (2 * mod(H + Twisted[AP], 2) - 1)
+					rotate x * 90 * (2 * Twist - 1)
 
 					scale 3
 					translate x * 2
 					rotate y * 90
+
+					rotate x * -90 * Twist
+
+					pigment { color PartColor[PartType] }
 				}
-
-				pigment { color PartColor[PartType] }
-
-				rotate x * 90 * -mod(H + Twisted[AP], 2)
 			}
 		#end
 	#end
