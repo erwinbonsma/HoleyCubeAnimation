@@ -5,6 +5,7 @@
 #declare PARTS_INCLUDED = 1;
 
 #declare NumParts = 12;
+#declare TotalParts = NumParts;
 
 // The connectors are oriented such that they attach to the center cube
 // in the same place (at zero Y and pos/neg Z)

@@ -75,3 +75,16 @@ camera {
 		#end
 	}
 #end
+
+#macro PuzzleL2()
+	union {
+		#for (I, 0, NumPartsL2 - 1)
+			object {
+				Part_L2[I]
+				transform { PartRotation[I] }
+				translate PartPosition[I]
+				transform { PuzzleTransformForPart(I) }
+			}
+		#end
+	}
+#end

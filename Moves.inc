@@ -327,7 +327,7 @@
 //------------------
 // Hiding parts
 
-#declare _IsPartHidden = array[NumParts]
+#declare _IsPartHidden = array[TotalParts]
 #macro HidePart(PartNum)
 	#if (Now < clock)
 		#ifdef(_IsPartHidden[PartNum - 1])
@@ -375,7 +375,7 @@ ResetPuzzleTransform()
 	#declare Now = Now + Duration;
 #end
 
-#declare _PartPuzzleTransform = array[NumParts]
+#declare _PartPuzzleTransform = array[TotalParts]
 // Release part from puzzle. It is not affected by subsequent puzzle transforms
 #macro ReleasePartFromPuzzle(PartNum)
 	#if (Now < clock)

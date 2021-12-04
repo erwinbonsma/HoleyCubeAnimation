@@ -1,5 +1,8 @@
 #include "Parts.inc"
 
+#declare NumPartsL2 = NumParts * NumParts;
+#declare TotalParts = NumPartsL2;
+
 // Rotation for L2 parts so that:
 // - in (nearly) all sides of the L2 cube, all four center cubes are oriented 
 //   differently
@@ -89,8 +92,6 @@
 
 	AttachPoint
 #end
-
-#declare NumPartsL2 = NumParts * NumParts;
 
 #declare Part_L2 = array[NumPartsL2];
 #declare Part_L2_AttachPoint = array[NumPartsL2];
