@@ -3,18 +3,6 @@
 #include "Moves.inc"
 #include "Anim.inc"
 
-//#declare CameraPosition = <-23, 15, -25> * 1.2 * 1.3;
-//#declare CameraPosition = <-32, 20, -100>;
-
-#declare CameraLookAt = <0, 0, 0>;
-#declare CameraPosition = <-13.8, 9, -15> * 5.5; // Matches Anim01 end position
-//#declare CameraPosition = <0, 0, -20>;
-
-#declare CameraLookAt = CameraLookAt + z * 14 - y * 6;
-#declare CameraPosition = CameraPosition + z * 14;
-
-#include "Scene.inc"
-
 #declare PartPosition = array[NumPartsL2];
 #declare PartRotation = array[NumPartsL2];
 
@@ -35,7 +23,7 @@
 	#declare PartPosition[I] = <
 		div(PartType, 4) * 5 - 6.5 - 10,
 		mod(PartType, 4) * -4 + 6,
-		div(I, NumParts) * 2 + 8
+		div(I, NumParts) * 2 + 9
 	>;
 #end
 
@@ -164,6 +152,24 @@ Move(<P_I_H, 0, 0>, -x * 2)
 
 	#declare MaxNow = max(Now, MaxNow);
 #end
+
+//--------------------------------------
+// Animate camera (throughout animation)
+
+// Starting position
+#declare CameraLookAt = <0, 0, 0>;
+#declare CameraPosition = <-13.8, 9, -15>; // Matches Anim01 end position
+
+#declare CameraLookAt_End = CameraLookAt + z * 14 - y * 6;
+#declare CameraPosition_End = CameraPosition * 5.5 + z * 14;
+
+#declare Now0 = Now;
+#declare Now = 1;
+MoveVector(CameraLookAt, CameraLookAt_End, Now0)
+#declare Now = 1;
+MoveVector(CameraPosition, CameraPosition_End, Now0)
+
+#include "Scene.inc"
 
 #for (I, 0, NumPartsL2 - 1)
 	object {
