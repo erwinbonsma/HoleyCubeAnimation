@@ -106,7 +106,7 @@
 	#local Twisted = array[NumParts] {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
 	#local InvPartRotation = InvPartRotations[div(I, 4)];
 
-	#debug concat("Part ", str(I,0,0), "\n")
+//	#debug concat("Part ", str(I,0,0), "\n")
 
 	RotatePartsMapping(PartsMapping, Twisted, InvPartRotation)
 	RotatePartsMapping(PartsMapping, Twisted, -x * XRotationForPart(I))
@@ -119,13 +119,13 @@
 		#local PartType = PartsMapping[J];
 		#local Index = I * NumParts + PartType;
 		#declare Part_L2[Index] = Part_L1(PartType)
-		#debug concat("I=", str(I,0,0), ", J=", str(J,0,0), ", T=", str(PartType,0,0), "\n")
+//		#debug concat("I=", str(I,0,0), ", J=", str(J,0,0), ", T=", str(PartType,0,0), "\n")
 	#end
 
 	#for (J, 0, 1)
 		#for (H, 0, 1)
 			#local AP = AttachPointForL2Connector(I, J, H);
-			#debug concat("I=", str(I,0,0), ", J=", str(J,0,0), ", H=", str(H,0,0), ", AP=", str(AP,0,0), "\n")
+//			#debug concat("I=", str(I,0,0), ", J=", str(J,0,0), ", H=", str(H,0,0), ", AP=", str(AP,0,0), "\n")
 			#local PartType = PartsMapping[AP];
 			#local Index = I * NumParts + PartType;
 			#local Twist = mod(H + Twisted[AP], 2);

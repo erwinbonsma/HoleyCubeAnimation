@@ -130,8 +130,7 @@ Move(<P_I_H, 0, 0>, -x * 2)
 #declare ClockStart = Now;
 #declare MaxNow = Now;
 
-#for (I, 0, 11)
-//#for (I, 0, NumParts - 1)
+#for (I, 0, NumParts - 1)
   // Move parts in parallel, with delay of 2 clock ticks
 	#declare Now = ClockStart + I * 2;
 

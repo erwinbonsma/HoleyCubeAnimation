@@ -57,7 +57,7 @@
 #declare InitialPartPosition[P_X_X - 1] = <8, -4, 0>;
 #declare InitialPartPosition[P_XxX - 1] = <8, -6, 0>;
 
-#declare AssemblyOrder = array[NumParts] { 6, 0, 1, 4, 9, 8, 11, 10, 7, 2, 3, 5};
+#declare AssemblyOrder = array[NumParts] { 6, 0, 1, 4, 9, 8, 11, 10, 7, 2, 3, 5 };
 
 
 #declare PartPosition = array[NumParts];
@@ -94,7 +94,7 @@ MoveVector(CameraPosition, <-23, 15, -25> * 1.2, 7)
 #declare MaxNow = Now;
 
 #for (I, 0, NumParts - 1)
-  // Move parts in parallel, with delay of 4 clock ticks
+  // Move parts in parallel, with delay of two clock ticks
 	#declare Now = ClockStart + I * 2;
 
 	#declare PartNum = AssemblyOrder[I];

@@ -163,8 +163,8 @@
 
 #macro Part_L1(N)
 	union {
-		difference {
-			#local R=1/6;
+//		difference {
+//			#local R=1/6;
 			box {
 				<-0.5, -0.5, -0.5>, <0.5, 0.5, 0.5>
 			}
@@ -174,7 +174,7 @@
 //			box {
 //				<-R, -0.4, -R>, <R, -0.51, R>
 //			}
-		}
+//		}
 
 		#for (I, 0, 1)
 			object {
