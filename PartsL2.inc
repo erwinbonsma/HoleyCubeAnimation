@@ -95,6 +95,7 @@
 
 #declare Part_L2 = array[NumPartsL2];
 #declare Part_L2_AttachPoint = array[NumPartsL2];
+#declare Part_L2_Twist = array[NumPartsL2];
 
 // Create L2 parts
 #local InvPartRotations = array[3] {
@@ -118,7 +119,6 @@
 		#local PartType = PartsMapping[J];
 		#local Index = I * NumParts + PartType;
 		#declare Part_L2[Index] = Part_L1(PartType)
-		#declare Part_L2_AttachPoint[Index] = 0; // Default
 		#debug concat("I=", str(I,0,0), ", J=", str(J,0,0), ", T=", str(PartType,0,0), "\n")
 	#end
 
@@ -128,14 +128,16 @@
 			#debug concat("I=", str(I,0,0), ", J=", str(J,0,0), ", H=", str(H,0,0), ", AP=", str(AP,0,0), "\n")
 			#local PartType = PartsMapping[AP];
 			#local Index = I * NumParts + PartType;
-			#declare Part_L2_AttachPoint[Index] = 1; // TODO
+			#local Twist = mod(H + Twisted[AP], 2);
+
+			#declare Part_L2_AttachPoint[Index] = AP;
+			#declare Part_L2_Twist[Index] = Twist;
 			#declare Part_L2[Index] = union {
 				object {
 					Part_L2[Index]
 				}
 
 				// L2 connector
-				#local Twist = mod(H + Twisted[AP], 2);
 				difference {
 					object {
 						Connector[mod(PartConnector[I][J], 3)]
