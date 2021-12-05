@@ -57,33 +57,8 @@
 #declare InitialPartPosition[P_X_X - 1] = <8, -4, 0>;
 #declare InitialPartPosition[P_XxX - 1] = <8, -6, 0>;
 
-#declare AssemblyOrder = array[NumParts];
+#declare AssemblyOrder = array[NumParts] { 6, 0, 1, 4, 9, 8, 11, 10, 7, 2, 3, 5};
 
-#declare AssemblyOrder[0] = 6;
-#declare AssemblyOrder[1] = 0;
-#declare AssemblyOrder[2] = 1;
-#declare AssemblyOrder[3] = 4;
-
-#declare AssemblyOrder[4] = 9;
-#declare AssemblyOrder[5] = 8;
-#declare AssemblyOrder[6] = 11;
-#declare AssemblyOrder[7] = 10;
-
-#declare AssemblyOrder[8] = 7;
-#declare AssemblyOrder[9] = 2;
-#declare AssemblyOrder[10] = 3;
-#declare AssemblyOrder[11] = 5;
-
-#declare CameraPosition = <0, 12, -30>;
-#declare CameraLookAt = <-18, 0, 9>;
-
-MoveVector(CameraLookAt, <0, 0, 10>, 4)
-
-#declare Now0 = Now;
-MoveVector(CameraLookAt, <0, 0, 4>, 7)
-#declare Now = Now0;
-MoveVector(CameraPosition, <-23, 15, -25> * 1.2, 7)
-#declare Now = Now0;
 
 #declare PartPosition = array[NumParts];
 #declare PartRotation = array[NumParts];
@@ -95,6 +70,20 @@ MoveVector(CameraPosition, <-23, 15, -25> * 1.2, 7)
 		#declare PartRotation[I] = transform {}
 	#end
 #end
+
+//--------------------------------------
+// Move camera
+
+#declare CameraPosition = <0, 12, -30>;
+#declare CameraLookAt = <-18, 0, 9>;
+
+MoveVector(CameraLookAt, <0, 0, 10>, 4)
+
+#declare Now0 = Now;
+MoveVector(CameraLookAt, <0, 0, 4>, 7)
+#declare Now = Now0;
+MoveVector(CameraPosition, <-23, 15, -25> * 1.2, 7)
+#declare Now = ceil(Now0);
 
 //--------------------------------------
 // Move to exploded pre-assembly
@@ -120,31 +109,32 @@ MoveVector(CameraPosition, <-23, 15, -25> * 1.2, 7)
 	#declare MaxNow = max(Now, MaxNow);
 #end
 
-#declare Now = MaxNow - 3;
+#declare Now = ceil(MaxNow - 3);
 MoveVector(CameraLookAt, <0, 0, 0>, 4)
 
 #declare Now = Now + 2;
 
 //--------------------------------------
-// Assemble both puzzle
+// Assemble both puzzle halves
 
 #declare MoveSpeed = 1;
 
 // Assemble first half
 Move(<P_XxX, 0, 0>, -z * 2)
+#declare Now = Now - 2; 
 Move(<P_I_H, 0, 0>, x * 2)
 Move(<P_XxX, P_I_H, 0>, -y * 2)
 
-Move(<P_H_X, 0, 0>, -z * 4)
+Move(<P_H_X, 0, 0>, -z * 2)
 #declare Now = Now - 2;
-Move(<P_H_H, 0, 0>, -z * 2)
+Move6(<P_XxX, P_I_H, P_IxX>, <P_I_I, 0, 0>, z * 2)
 
-Move6(<P_XxX, P_I_H, P_H_X>, <P_IxX, 0, 0>, -y * 2)
-
+Move(<P_H_H, P_I_I, 0>, y * 2)
 Move(<P_I_I, 0, 0>, x * 2)
 
 // Assemble second half
 Move(<P_HxX, 0, 0>, z * 2)
+#declare Now = Now - 2;
 Move(<P_IxH, 0, 0>, -x * 2)
 Move(<P_HxX, P_IxH, 0>, -y * 2)
 
@@ -152,26 +142,20 @@ Move(<P_HxH, 0, 0>, z * 2)
 #declare Now = Now - 2;
 Move(<P_I_X, 0, 0>, -x * 2)
 
-#declare Now = Now - 1;
-Move(<P_X_X, 0, 0>, z * 4)
+Move6(<P_HxX, P_IxH, P_IxI>, <P_HxH, P_I_X, 0>, -z * 2)
+#declare Now = Now - 2;
+Move(<P_X_X, 0, 0>, z * 2)
 
 Move(<P_HxH, P_I_X, 0>, y * 2)
 
-
 // Assemble both halves
-#declare Now0 = Now;
-Move6(<P_XxX, P_I_H, P_H_X>, <P_IxX, P_I_I, P_H_H>, <0, 2, 2>)
-#declare D = Now - Now0;
-#declare Now = Now0;
-TimedMove6(<P_X_X, P_IxH, P_HxX>, <P_I_X, P_IxI, P_HxH>, <0, 0, -2>, D)
-
-#declare Now = Now0;
-MoveVector(CameraPosition, CameraPosition * 0.7, D)
-
 #declare Now0 = Now;
 SlowMove6(<P_XxX, P_I_H, P_H_X>, <P_IxX, P_I_I, P_H_H>, -x * 2)
 #declare Now = Now0;
 SlowMove6(<P_X_X, P_IxH, P_HxX>, <P_I_X, P_IxI, P_HxH>, x * 2)
+#declare D = Now - Now0;
+#declare Now = Now0;
+MoveVector(CameraPosition, CameraPosition * 0.7, D)
 
 // Rotate assembled puzzle
 
