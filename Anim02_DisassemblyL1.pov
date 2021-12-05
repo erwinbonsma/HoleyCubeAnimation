@@ -49,7 +49,11 @@
 	#end
 
 	// Remember the restore position
-	#declare RestorePosition[I] = PartPosition[PartIndex];
+	//   Note: Setting target position to PartPosition[I] instead of
+	//   PartPosition[PartIndex]. For the parts where I != PartIndex, the last Z-move
+	//   will be done separately via a pure Z-move. This ensures that part does not
+	//   go across parts in neighbouring rows.
+	#declare RestorePosition[I] = PartPosition[I];
 	#declare RestoreRotation[I] = PartRotation[PartIndex];
 
 	#declare PartPosition[PartIndex] = PositionForPart(I, 1);
@@ -141,11 +145,15 @@ Move(<P_I_H, 0, 0>, -x * 2)
 
 	#declare Now0 = Now;
 	TimedMove(<PartNum + 1, 0, 0>, DeltaV, DeltaT)
+	#if (PartNum > NumParts)
+		Move(<PartNum + 1, 0, 0>, z * 2)
+	#end
+
 	#declare Now = Now0;
 	TimedRotateToTransform(<PartNum + 1, 0, 0>, RestoreRotation[PartType], DeltaT)
 
 	#if (PartNum > NumParts)
-		// Make room for the part to be plaed in the second layer
+		// Make room for the part to be placed in the second layer
 		#declare Now0 = Now0 + DeltaT;
 		#declare Now = Now0 - 4;
 		Move(<PartNum - 11, 0, 0>, x * 2)
