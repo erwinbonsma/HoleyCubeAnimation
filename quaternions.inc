@@ -17,6 +17,8 @@
 #version 3.5;
 #include "functions.inc"
 
+#declare QuaternionsEps = 0.0001;
+
 #macro QToMatrix(q)
   // Convert a quaternion to a Povray transformation matrix (4x3)
   // Use: matrix <M[0].x,M[0].y,M[0].z,M[1].x,M[1].y,M[1].z,M[2].x,M[2].y,M[2].z,M[3].x,M[3].y,M[3].z>
@@ -61,7 +63,8 @@
 
 #macro Qsc(q)
   // Square the quaternion components
-  (q.x * q.x + q.y * q.y + q.z * q.z + q.t * q.t)
+  #local r = q.x * q.x + q.y * q.y + q.z * q.z + q.t * q.t;
+  r
 #end
 
 #macro QMagnitude(q)
@@ -145,16 +148,35 @@
   <sr * cpcy - cr * spsy,cr * sp * cy + sr * cp * sy,cr * cp * sy - sr * sp * cy, cr * cpcy + sr * spsy>
 #end
 
+#macro QToString(Q)
+	concat(
+		"Q=(",
+		vstr(4, Q, ", ", 4, 4),
+		")"
+	)
+#end
+
+#macro QTrace(Q)
+	#debug concat(QToString(Q), "\n")
+	Q
+#end
+
 #macro Qln(q)
   // ln(q)
   #local r = f_r(q.x, q.y, q.z);
-  #if (r > 0)
+  #if (r > QuaternionsEps)
     #local at = atan2(r, q.t) / r;
   #else
     #local at = 0;
   #end
+  #local sc = Qsc(q);
+  #if (sc > QuaternionsEps)
+    #local ln_sc_q = ln(sc);
+  #else
+    #local ln_sc_q = 0;
+  #end
 
-  <at * q.x, at * q.y, at * q.z, 0.5 * ln(Qsc(q))>
+  <at * q.x, at * q.y, at * q.z, 0.5 * ln_sc_q>
 #end
 
 #macro QExp(q)
