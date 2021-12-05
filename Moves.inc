@@ -68,6 +68,17 @@
 	>
 #end
 
+#macro QuaternionToString(Q)
+	#local M = QToMatrix(Q);
+	concat(
+		#for (I, 0, 3)
+			"<",
+			vstr(3, M[I], ", ", 3, 3)
+			">"
+		#end
+	)
+#end
+
 //----------------------------------------------------------------------------
 
 #macro FractionMovePart(PartNum, Delta)
@@ -100,9 +111,13 @@
 
 		#local QT0 = QuaternionFromTransform(PartRotation[PartNum - 1]);
 		#local QT1 = QuaternionFromTransform(Transform);
+		#debug concat("QT0: ", QuaternionToString(QT0), "\n")
+		#debug concat("QT1: ", QuaternionToString(QT1), "\n")
 
 		#if (Qsc(QDiff(QT0, QT1)) > 0)
 			#local QT = QLinear(QT0, QT1, Fraction);
+			#debug concat("Fraction = ", str(Fraction, 0, 3), "\n")
+			#debug concat("QT:  ", QuaternionToString(QT), "\n")
 
 			#declare PartRotation[PartNum - 1] = transform {
 				MatrixFromQuaternion(QT)
@@ -318,6 +333,14 @@
 
 #macro TimedRotateToTransform(What, Transform, TotalDuration)
 	#local Clock_TransformDone = Now + TotalDuration - PauseDuration;
+
+	#debug concat(
+		"TimedRotateToTransform(",
+		str(What.x, 0, 0),
+		", ",
+		str(TotalDuration, 0, 3),
+		")\n"
+	)
 
 	_RotateToTransform(What, Transform, Clock_TransformDone)
 

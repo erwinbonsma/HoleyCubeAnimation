@@ -39,12 +39,18 @@
 	>;
 #end
 
+#declare RestorePosition = array[NumParts];
+#declare RestoreRotation = array[NumParts];
 #for (I, 0, NumParts - 1)
 	#ifdef (Part_L2_Twist[I])
 		#local PartIndex = I + NumParts;
 	#else
 		#local PartIndex = I;
 	#end
+
+	// Remember the restore position
+	#declare RestorePosition[I] = PartPosition[PartIndex];
+	#declare RestoreRotation[I] = PartRotation[PartIndex];
 
 	#declare PartPosition[PartIndex] = PositionForPart(I, 1);
 	#declare PartRotation[PartIndex] = RotationForPart(I);
@@ -66,6 +72,9 @@
 #declare P_HxH = P_HxH + 12;
 #declare P_HxX = P_HxX + 12;
 #declare P_XxX = P_XxX + 12;
+
+//--------------------------------------
+// Disassemble L1 puzzle
 
 // Disassemble puzzle into two halves
 #declare Now0 = Now;
@@ -108,6 +117,46 @@ Move(<P_XxX, 0, 0>, z * 2)
 Move(<P_I_H, 0, 0>, -x * 2)
 
 #declare Now = Now + 2;
+
+//--------------------------------------
+// Move parts to starting grid
+
+#declare MoveSpeed = 2;
+
+#declare RestoreOrder = array[NumParts] {
+	5, 3, 2, 7, 10 + 12, 11 + 12, 8 + 12, 9 + 12, 4, 1, 0, 6
+};
+
+#declare ClockStart = Now;
+#declare MaxNow = Now;
+
+#for (I, 0, 11)
+//#for (I, 0, NumParts - 1)
+  // Move parts in parallel, with delay of 2 clock ticks
+	#declare Now = ClockStart + I * 2;
+
+	#declare PartNum = RestoreOrder[I];
+	#declare PartType = mod(PartNum, NumParts);
+	#declare DeltaV = RestorePosition[PartType] - PartPosition[PartNum];
+	#declare DeltaT = ClockTicksForMove(DeltaV);
+
+	#declare Now0 = Now;
+	TimedMove(<PartNum + 1, 0, 0>, DeltaV, DeltaT)
+	#declare Now = Now0;
+	TimedRotateToTransform(<PartNum + 1, 0, 0>, RestoreRotation[PartType], DeltaT)
+
+	#if (PartNum > NumParts)
+		// Make room for the part to be plaed in the second layer
+		#declare Now0 = Now0 + DeltaT;
+		#declare Now = Now0 - 4;
+		Move(<PartNum - 11, 0, 0>, x * 2)
+
+		#declare Now = Now0 + 2;
+		Move(<PartNum - 11, 0, 0>, -x * 2)
+	#end
+
+	#declare MaxNow = max(Now, MaxNow);
+#end
 
 #for (I, 0, NumPartsL2 - 1)
 	object {
