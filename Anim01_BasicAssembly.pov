@@ -3,8 +3,8 @@
 #include "Moves.inc"
 #include "Anim.inc"
 
-// Clock: 0..85
-// Frames: 0..2125
+// Clock: 0..75
+// Frames: 0..1875
 
 // Order parts by increasing weight
 #declare InitialPartPosition = array[NumParts];
@@ -155,7 +155,7 @@ SlowMove6(<P_XxX, P_I_H, P_H_X>, <P_IxX, P_I_I, P_H_H>, -x * 2)
 SlowMove6(<P_X_X, P_IxH, P_HxX>, <P_I_X, P_IxI, P_HxH>, x * 2)
 #declare D = Now - Now0;
 #declare Now = Now0;
-MoveVector(CameraPosition, CameraPosition * 0.7, D)
+MoveVector(CameraPosition, CameraPosition * 0.5, D)
 
 // Rotate assembled puzzle
 
@@ -165,4 +165,6 @@ RotatePuzzle(<360, 0, 0>, 8)
 #include "Scene.inc"
 
 PuzzleL1()
+
+#debug concat(vstr(3, CameraPosition, ", ", 1, 3), "\n")
 

@@ -1,6 +1,6 @@
 #include "colors.inc"
 
-#local AreaLights = 1;
+#local AreaLights = 0;
 
 #ifndef (CameraLookAt)
 	#declare CameraLookAt = <0, 0, 0>;
