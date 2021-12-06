@@ -1,3 +1,6 @@
+#ifndef (ANIM_INCLUDED)
+#declare ANIM_INCLUDED = 1;
+
 // Pre-condition: t1 > t0
 // Returns 0 if tnow < t0
 // Returns 1 if tnow > t1
@@ -5,7 +8,7 @@
 #declare f_ramp = function(t0, t1, tnow) { (min(t1, max(t0, tnow)) - t0) / (t1 - t0) }
 
 #macro LerpVector(V0, V1, Fraction)
-	(V0 * (1 - fraction) + V1 * Fraction)
+	(V0 * (1 - Fraction) + V1 * Fraction)
 #end
 
 #macro MoveVector(V, VTarget, Duration)
@@ -20,3 +23,5 @@
 
 	#declare Now = Now + Duration;
 #end
+
+#end // #ifndef (ANIM_INCLUDED)

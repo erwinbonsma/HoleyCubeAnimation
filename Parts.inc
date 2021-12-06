@@ -1,8 +1,8 @@
-// Defines basic puzzle parts (shape and colors) and their assembly
-#include "vectors.inc"
-
 #ifndef (PARTS_INCLUDED)
 #declare PARTS_INCLUDED = 1;
+
+// Defines basic puzzle parts (shape and colors) and their assembly
+#include "vectors.inc"
 
 #declare NumParts = 12;
 #declare TotalParts = NumParts;
