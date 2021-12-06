@@ -3,12 +3,13 @@
 #include "Moves.inc"
 #include "Anim.inc"
 
-#declare CameraPosition = <-23, 15, -25> * 1.2 * 1.3;
-
-#include "Scene.inc"
-
 #declare PartPosition = array[NumPartsL2];
 #declare PartRotation = array[NumPartsL2];
+
+InitStartingPlacementL2()
+
+#declare PartDstPosition = array[NumPartsL2];
+#declare PartDstRotation = array[NumPartsL2];
 
 #for (I, 0, NumParts - 1)
 	#local L2_Transform = transform {
@@ -31,7 +32,7 @@
 		// into account the above transforms so that this assembly works.
 		transform { RotationForPart(I) }
 
-		translate PositionForPart(I, 3)
+		translate PositionForPart(I, 9)
 	}
 
 	#for (J, 0, NumParts - 1)
@@ -45,12 +46,74 @@
 			transform { L2_Transform }
 		}
 
-		#declare PartPosition[PartIndex] = VectorTransform(<0, 0, 0>, Combined);
-		#declare PartRotation[PartIndex] = transform {
+		#declare PartDstPosition[PartIndex] = VectorTransform(<0, 0, 0>, Combined);
+		#declare PartDstRotation[PartIndex] = transform {
 			transform { Combined }
-			translate -PartPosition[PartIndex]
+			translate -PartDstPosition[PartIndex]
 		}
 	#end
 #end
 
-PuzzleL2()
+//--------------------------------------
+// Move to fully exploded layout
+
+#declare MoveSpeed = 2;
+#declare ClockStart = Now;
+
+#for (I, 0, NumParts - 1)
+	#local Mapping = array[NumParts]
+	#local Twisted = array[NumParts]
+
+	#local PartIndexL2 = AssemblyOrderL2[I];
+
+	InitPartsMapping(Mapping, Twisted)
+	UpdateMappingForInversePartTransform(PartIndexL2, Mapping, Twisted)
+	#ifdef (PartRotation_L2[PartIndexL2])
+		RotatePartsMapping(Mapping, Twisted, PartRotation_L2[PartIndexL2])
+	#end
+	UpdateMappingForPartTransform(PartIndexL2, Mapping, Twisted)
+
+	#debug concat(
+		str(I, 0, 0), " ",
+		str(PartIndexL2, 0, 0), " ",
+		": ",
+		MappingToString(Mapping),
+		"\n"
+	)
+
+	#for (J, 0, NumParts - 1)
+		#declare Now = ClockStart + (I * NumParts + J) * 2;
+
+		#local PartIndex = Mapping[AssemblyOrderL1[J]] + PartIndexL2 * NumParts;
+
+		#declare DeltaV = PartDstPosition[PartIndex] - PartPosition[PartIndex];
+		#declare DeltaT = ClockTicksForMove(DeltaV);
+
+		#declare Now0 = Now;
+		TimedMove(<PartIndex + 1, 0, 0>, DeltaV, DeltaT)
+		#declare Now = Now0;
+		TimedRotateToTransform(<PartIndex + 1, 0, 0>, PartDstRotation[PartIndex], DeltaT)
+	#end
+#end
+
+//--------------------------------------
+// Animate camera (throughout animation)
+
+// Match Anim02 end position
+#declare CameraLookAt = <0, -6, 14>;
+#declare CameraPosition = <-75.9, 49.5, -68.5>;
+
+#declare CameraLookAt = <0, 0, 0>;
+#declare CameraPosition = <-83, 54, -75>;
+
+#include "Scene.inc"
+
+//PuzzleL2()
+
+#for (I, 0, NumPartsL2 - 1)
+	object {
+		Part_L2[I]
+		transform { PartRotation[I] }
+		translate PartPosition[I]
+	}
+#end

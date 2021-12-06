@@ -188,4 +188,6 @@
 	}
 #end
 
+#declare AssemblyOrderL1 = array[NumParts] { 6, 0, 1, 4, 9, 8, 11, 10, 7, 2, 3, 5 };
+
 #end // ifdef (PARTS_INCLUDED)

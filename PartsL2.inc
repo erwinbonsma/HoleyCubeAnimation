@@ -39,7 +39,7 @@
 	#end
 #end
 
-#macro OutputMapping(Mapping)
+#macro MappingToString(Mapping)
 	#local S = "";
 	#for (I, 0, NumParts - 1)
 		#if (I > 0)
@@ -47,7 +47,7 @@
 		#end
 		#local S = concat(S, str(Mapping[I], 0, 0));
 	#end
-	#debug concat(S, "\n")
+	S
 #end
 
 // Mapping: From Position to Part
@@ -93,8 +93,19 @@
 	AttachPoint
 #end
 
+// The order (in puzzle position) how the parts should be moved to their exploded
+// position. The order is from front to back, so that puzzle parts do not need to
+// move across parts already placed.
+#declare AssemblyOrderL2 = array[NumParts] { 0, 1, 6, 4, 9, 8, 11, 10, 7, 2, 3, 5 };
+
 #macro InitStartingPlacementL2()
+	#local AssemblyOrderForType = array[NumParts]
+	#for (I, 0, NumParts - 1)
+		#local AssemblyOrderForType[AssemblyOrderL2[I]] = I;
+	#end
+
 	#for (I, 0, NumPartsL2 - 1)
+		#local PartTypeL2 = div(I, NumParts);
 		#local PartType = mod(I, NumParts);
 
 		#declare PartRotation[I] = transform {
@@ -106,7 +117,7 @@
 		#declare PartPosition[I] = <
 			div(PartType, 4) * 5 - 6.5 - 10,
 			mod(PartType, 4) * -4 + 6,
-			div(I, NumParts) * 2 + 9
+			AssemblyOrderForType[PartTypeL2] * 2 + 9
 		>;
 	#end
 #end
@@ -115,20 +126,41 @@
 #declare Part_L2_AttachPoint = array[NumPartsL2];
 #declare Part_L2_Twist = array[NumPartsL2];
 
+#macro InitPartsMapping(Mapping, Twisted)
+	#for (I, 0, NumParts - 1)
+		#declare Mapping[I] = I;
+		#declare Twisted[I] = 0;
+	#end
+#end
+
+#macro UpdateMappingForPartTransform(N, Mapping, Twisted)
+	#local PartRotations = array[3] {
+		<0, 0, 0>, <90, 0, 90>, <0, -90, -90>
+	}
+
+	RotatePartsMapping(Mapping, Twisted, x * XRotationForPart(N))
+	RotatePartsMapping(Mapping, Twisted, PartRotations[div(N, 4)])
+#end
+
+#macro UpdateMappingForInversePartTransform(N, Mapping, Twisted)
+	#local InvPartRotations = array[3] {
+		<0, 0, 0>, <-90, -90, 0>, <90, 0, 90>
+	}
+
+	RotatePartsMapping(Mapping, Twisted, InvPartRotations[div(N, 4)])
+	RotatePartsMapping(Mapping, Twisted, -x * XRotationForPart(N))
+#end
+
+//--------------------------------------
 // Create L2 parts
-#local InvPartRotations = array[3] {
-	<0, 0, 0>, <-90, -90, 0>, <90, 0, 90>
-}
+
 #for (I, 0, NumParts - 1)
-	#local PartsMapping = array[NumParts] {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11};
-	#local Twisted = array[NumParts] {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
-	#local InvPartRotation = InvPartRotations[div(I, 4)];
+	#local PartsMapping = array[NumParts]
+	#local Twisted = array[NumParts]
 
 //	#debug concat("Part ", str(I,0,0), "\n")
-
-	RotatePartsMapping(PartsMapping, Twisted, InvPartRotation)
-	RotatePartsMapping(PartsMapping, Twisted, -x * XRotationForPart(I))
-
+	InitPartsMapping(PartsMapping, Twisted)
+	UpdateMappingForInversePartTransform(I, PartsMapping, Twisted)
 	#ifdef (PartRotation_L2[I])
 		RotatePartsMapping(PartsMapping, Twisted, PartRotation_L2[I])
 	#end

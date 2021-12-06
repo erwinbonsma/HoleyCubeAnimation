@@ -57,7 +57,7 @@
 #declare InitialPartPosition[P_X_X - 1] = <8, -4, 0>;
 #declare InitialPartPosition[P_XxX - 1] = <8, -6, 0>;
 
-#declare AssemblyOrder = array[NumParts] { 6, 0, 1, 4, 9, 8, 11, 10, 7, 2, 3, 5 };
+#declare AssemblyOrder = AssemblyOrderL1;
 
 
 #declare PartPosition = array[NumParts];
