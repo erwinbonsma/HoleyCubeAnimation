@@ -44,15 +44,35 @@
 #end
 
 //----------------------------------------------------------------------------
-// Quaternion calculations
+// Quaternion related macros
 
-#macro QuaternionFromTransform(T)
-	#local M = array[4];
+#macro MatrixToString(M)
+	concat(
+		"[",
+		#for (I, 0, 3)
+			"<",
+			vstr(3, M[I], ",", 0, 3),
+			">",
+			#if (I < 3)
+				", ",
+			#end
+		#end
+		"]"
+	)
+#end
+
+// M should be array[4] (of vectors)
+#macro TransformToMatrix(T, M)
 	#for (I, 0, 3)
-		#local M[I] = <0, 0, 0>;
+		#declare M[I] = <0, 0, 0>;
 	#end
 
 	VectorsFromTransform(T, M[0], M[1], M[2], M[3])
+#end
+
+#macro QuaternionFromTransform(T)
+	#local M = array[4];
+	TransformToMatrix(T, M)
 
 	QFromMatrix(M)
 #end
