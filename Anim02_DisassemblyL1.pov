@@ -3,6 +3,9 @@
 #include "Moves.inc"
 #include "Anim.inc"
 
+// Clock: 0..50
+// Frames: 0..1250
+
 #declare PartPosition = array[NumPartsL2];
 #declare PartRotation = array[NumPartsL2];
 
