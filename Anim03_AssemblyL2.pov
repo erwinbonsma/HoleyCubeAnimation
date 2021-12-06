@@ -39,7 +39,7 @@ InitStartingPlacementL2()
 		#local PartIndex = I * NumParts + J;
 		#local L1_Transform = transform {
 			transform { RotationForPart(J) }
-			translate PositionForPart(J, 1)
+			translate PositionForPart(J, 3)
 		}
 		#local Combined = transform {
 			transform { L1_Transform }
@@ -58,7 +58,7 @@ InitStartingPlacementL2()
 // Move to fully exploded layout
 
 #declare MoveSpeed = 2;
-#declare ClockStart = Now;
+#declare ClockStart = Now + 20;
 
 #for (I, 0, NumParts - 1)
 	#local Mapping = array[NumParts]
@@ -82,13 +82,12 @@ InitStartingPlacementL2()
 	)
 
 	#for (J, 0, NumParts - 1)
-		#declare Now = ClockStart + (I * NumParts + J) * 2;
-
 		#local PartIndex = Mapping[AssemblyOrderL1[J]] + PartIndexL2 * NumParts;
 
 		#declare DeltaV = PartDstPosition[PartIndex] - PartPosition[PartIndex];
 		#declare DeltaT = ClockTicksForMove(DeltaV);
 
+		#declare Now = ClockStart + (I * NumParts + J) * 2 - DeltaT;
 		#declare Now0 = Now;
 		TimedMove(<PartIndex + 1, 0, 0>, DeltaV, DeltaT)
 		#declare Now = Now0;
