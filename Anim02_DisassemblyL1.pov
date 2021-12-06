@@ -9,26 +9,7 @@
 #declare PartPosition = array[NumPartsL2];
 #declare PartRotation = array[NumPartsL2];
 
-#declare NumBulky = array[NumParts];
-#for (I, 0, NumParts - 1)
-	#declare NumBulky[I] = 0;
-#end
-
-#for (I, 0, NumPartsL2 - 1)
-	#local PartType = mod(I, NumParts);
-
-	#declare PartRotation[I] = transform {
-		#ifdef (Part_L2_Twist[I])
-			rotate x * 90 * (Part_L2_Twist[I] - 1)
-		#end
-		rotate z * 90
-	}
-	#declare PartPosition[I] = <
-		div(PartType, 4) * 5 - 6.5 - 10,
-		mod(PartType, 4) * -4 + 6,
-		div(I, NumParts) * 2 + 9
-	>;
-#end
+InitStartingPlacementL2()
 
 #declare RestorePosition = array[NumParts];
 #declare RestoreRotation = array[NumParts];

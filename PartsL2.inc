@@ -93,6 +93,24 @@
 	AttachPoint
 #end
 
+#macro InitStartingPlacementL2()
+	#for (I, 0, NumPartsL2 - 1)
+		#local PartType = mod(I, NumParts);
+
+		#declare PartRotation[I] = transform {
+			#ifdef (Part_L2_Twist[I])
+				rotate x * 90 * (Part_L2_Twist[I] - 1)
+			#end
+			rotate z * 90
+		}
+		#declare PartPosition[I] = <
+			div(PartType, 4) * 5 - 6.5 - 10,
+			mod(PartType, 4) * -4 + 6,
+			div(I, NumParts) * 2 + 9
+		>;
+	#end
+#end
+
 #declare Part_L2 = array[NumPartsL2];
 #declare Part_L2_AttachPoint = array[NumPartsL2];
 #declare Part_L2_Twist = array[NumPartsL2];
