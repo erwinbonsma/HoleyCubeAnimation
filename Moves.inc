@@ -129,8 +129,9 @@
 			#declare PartRotation[PartNum - 1] = transform { translate 0 }
 		#end
 
-		#local QT0 = QuaternionFromTransform(PartRotation[PartNum - 1]);
-		#local QT1 = QuaternionFromTransform(Transform);
+		#local QT0 = QNormalize(QuaternionFromTransform(PartRotation[PartNum - 1]));
+		#local QT1 = QNormalize(QuaternionFromTransform(Transform));
+
 //		#debug concat("QT0: ", QuaternionToString(QT0), "\n")
 //		#debug concat("QT1: ", QuaternionToString(QT1), "\n")
 
