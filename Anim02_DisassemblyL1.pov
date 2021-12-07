@@ -9,7 +9,7 @@
 #declare PartPosition = array[NumPartsL2];
 #declare PartRotation = array[NumPartsL2];
 
-InitStartingPlacementL2()
+InitStartingPlacementL2(PartPosition, PartRotation)
 
 #declare RestorePosition = array[NumParts];
 #declare RestoreRotation = array[NumParts];
