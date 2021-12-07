@@ -107,15 +107,19 @@
 	#for (I, 0, NumPartsL2 - 1)
 		#local PartTypeL2 = div(I, NumParts);
 		#local PartType = mod(I, NumParts);
+		#local XOffset = 0;
 
 		#declare PartRotation[I] = transform {
 			#ifdef (Part_L2_Twist[I])
+				// Compensate for the center shift so that L1 parts still line-up
+				#local XOffset = 1.5;
+
 				rotate x * 90 * (Part_L2_Twist[I] - 1)
 			#end
 			rotate z * 90
 		}
 		#declare PartPosition[I] = <
-			div(PartType, 4) * 5 - 6.5 - 10,
+			div(PartType, 4) * 5 - 6.5 - 10 + XOffset,
 			mod(PartType, 4) * -4 + 6,
 			AssemblyOrderForType[PartTypeL2] * 2 + 9
 		>;
@@ -204,6 +208,12 @@
 
 					pigment { color PartColor[PartType] }
 				}
+
+				// Move object so that its origin is at its actual center
+				//
+				// This leads to more-contained rotations, which looks more natural but also
+				// reduces chance of path collisions when moving parts to exploded layout.
+				translate 1.5 * <0, Twist, 1 - Twist>
 			}
 		#end
 	#end

@@ -38,6 +38,11 @@ InitStartingPlacementL2()
 	#for (J, 0, NumParts - 1)
 		#local PartIndex = I * NumParts + J;
 		#local L1_Transform = transform {
+			#ifdef (Part_L2_Twist[PartIndex])
+				// Compensate for center shift of bulky parts
+				#local T = Part_L2_Twist[PartIndex];
+				translate -1.5 * <0, T, 1 - T>
+			#end
 			transform { RotationForPart(J) }
 			translate PositionForPart(J, 3)
 		}
