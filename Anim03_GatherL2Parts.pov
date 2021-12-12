@@ -13,6 +13,8 @@
 
 #declare MoveSpeed = 2;
 
+#declare PathsFilename = "Anim03_Paths.csv";
+
 //--------------------------------------
 // Planning ioputs
 
@@ -103,50 +105,81 @@ InitAssemblyPlacementL2(PartDstPosition, PartDstRotation, 3, 9)
 	))
 #end
 
-#fopen PATHS_FILE "Anim03_Paths.csv" write
+#macro WritePathFile()
+	#fopen PATHS_FILE PathsFilename write
 
-#declare Now = 0;
-#declare NumPathsTotal = 0;
+	#declare Now = 0;
+	#declare NumPathsTotal = 0;
 
-#while (NumPathsTotal < NumPartsL2)
+	#while (NumPathsTotal < NumPartsL2)
 
-	// Consider four L2 parts
-	#local LayerL2 = div(NumPathsTotal, NumParts * 4);
-	#for (I, LayerL2 * 4, LayerL2 * 4 + 3)
-		#local PartTypeL2 = AssemblyOrderL2[I];
+		// Consider four L2 parts
+		#local LayerL2 = div(NumPathsTotal, NumParts * 4);
+		#for (I, LayerL2 * 4, LayerL2 * 4 + 3)
+			#local PartTypeL2 = AssemblyOrderL2[I];
 
-		#if (NumArrived[PartTypeL2] < NumParts)
-			// Some L1 parts still need to be planned for this L2 part.
+			#if (NumArrived[PartTypeL2] < NumParts)
+				// Some L1 parts still need to be planned for this L2 part.
 
-			// Consider four L1 parts
-			#local LayerL1 = div(NumArrived[PartTypeL2], 4);
+				// Consider four L1 parts
+				#local LayerL1 = div(NumArrived[PartTypeL2], 4);
 
-			#for (J, LayerL1 * 4, LayerL1 * 4 + 3)
-				#local PartTypeL1 = Mapping[PartTypeL2][AssemblyOrderL1[J]];
-				#local PartIndex = PartTypeL2 * NumParts + PartTypeL1;
+				#for (J, LayerL1 * 4, LayerL1 * 4 + 3)
+					#local PartTypeL1 = Mapping[PartTypeL2][AssemblyOrderL1[J]];
+					#local PartIndex = PartTypeL2 * NumParts + PartTypeL1;
 
-				#local DeltaV = PartDstPosition[PartIndex] - PartSrcPosition[PartIndex];
-				#local DeltaT = ClockTicksForMove(DeltaV);
-				#local Departure = Now - DeltaT;
+					#local DeltaV = PartDstPosition[PartIndex] - PartSrcPosition[PartIndex];
+					#local DeltaT = ClockTicksForMove(DeltaV);
+					#local Departure = Now - DeltaT;
 
-				#if (
-					LastArrival[PartTypeL2] <= Now - MinArrivalDelay &
-					NumDeparted[PartTypeL1] = I &
-					LastDeparture[PartTypeL1] <= Departure - MinDepartureDelay
-				)
-					// Found a part that can move
+					#if (
+						LastArrival[PartTypeL2] <= Now - MinArrivalDelay &
+						NumDeparted[PartTypeL1] = I &
+						LastDeparture[PartTypeL1] <= Departure - MinDepartureDelay
+					)
+						// Found a part that can move
 
-					// TODO: Check if it collides with any paths
+						// TODO: Check if it collides with any paths
 
-					PlanMove(PartTypeL2, PartTypeL1, Departure, I, J)
-					#break
+						PlanMove(PartTypeL2, PartTypeL1, Departure, I, J)
+						#break
+					#end
 				#end
 			#end
 		#end
+
+		#declare Now = Now + 1;
+		#if (Now > 500)
+			#break
+		#end
+	#end
+#end
+
+#macro ReadPathFile()
+	#local NumLines = 0;
+
+	#if (file_exists(PathsFilename))
+		#fopen PATHS_FILE PathsFilename read
+
+		#while (defined(PATHS_FILE))
+			#read (PATHS_FILE,PartIndex,DepTime)
+
+			#ifdef (DepartureTime[PartIndex])
+				#warning concat("Duplicate entry for Part ", str(PartIndex, 0, 0), "\n")
+			#else
+				#declare DepartureTime[PartIndex] = DepTime;
+			#end
+
+			#local NumLines = NumLines + 1;
+		#end
 	#end
 
-	#declare Now = Now + 1;
-	#if (Now > 500)
-		#break
-	#end
+	(NumLines)
+#end
+
+#if (ReadPathFile() = NumPartsL2)
+	#debug "Cached paths read from file\n"
+#else
+	#debug "Generating paths...\n"
+	WritePathFile()
 #end
