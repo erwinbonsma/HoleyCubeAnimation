@@ -367,3 +367,12 @@ InitStartingPlacementL2(PartPosition, PartRotation)
 		}
 	#end
 #end
+
+//union {
+//	sphere { <0, 0, 0>, 1}
+//	cylinder {
+//		z * -10,
+//		z * 30, 0.3
+//	}
+//	pigment { color White }
+//}

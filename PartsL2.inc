@@ -216,7 +216,7 @@
 		#end
 
 		#declare PartPosition[I] = <
-			div(PartType, 4) * 5 - 6.5 - 10 + XOffset,
+			div(PartType, 4) * 5 - 6.5 + XOffset,
 			mod(PartType, 4) * -4 + 6,
 			0
 		>;
