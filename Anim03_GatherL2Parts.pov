@@ -111,7 +111,7 @@ InitAssemblyPlacementL2(PartDstPosition, PartDstRotation, 3, 9)
 
 	// Plan the move of this part
 	#declare PartSrcPosition[PartIndex] =
-		PartSrcPosition[PartIndex] + SourcePosZOffset(PartTypeL1);
+		PartSrcPosition[PartIndex] + SourcePosZOffset(PartTypeL1) * z;
 
 	#declare NumArrived[PartTypeL2] = NumArrived[PartTypeL2] + 1;
 	#declare LastArrival[PartTypeL2] = Now;
@@ -161,7 +161,9 @@ InitAssemblyPlacementL2(PartDstPosition, PartDstRotation, 3, 9)
 					#local PartTypeL1 = Mapping[PartTypeL2][AssemblyOrderL1[J]];
 					#local PartIndex = PartTypeL2 * NumParts + PartTypeL1;
 
-					#local SrcPos = PartSrcPosition[PartIndex] + SourcePosZOffset(PartTypeL1);
+					#local SrcPos = (
+						PartSrcPosition[PartIndex] + SourcePosZOffset(PartTypeL1) * z
+					);
 					#local DeltaV = PartDstPosition[PartIndex] - SrcPos;
 					#local DeltaT = ClockTicksForMove(DeltaV);
 					#local Departure = Now - DeltaT;
@@ -178,7 +180,7 @@ InitAssemblyPlacementL2(PartDstPosition, PartDstRotation, 3, 9)
 						LastArrival[PartTypeL2] <= Now - MinArrivalDelay &
 						!defined(DepartureTime[PartIndex]) &
 						LastDeparture[PartTypeL1] <= Departure - MinDepartureDelay &
-						NumDeparted[PartTypeL1] <= MinPartsDeparted + 1
+						NumDeparted[PartTypeL1] <= MinPartsDeparted + 2
 					)
 						// Found a part that can move
 //						#debug concat(
@@ -193,19 +195,31 @@ InitAssemblyPlacementL2(PartDstPosition, PartDstRotation, 3, 9)
 						#local CollisionTime = 0;
 						#local Collision = false;
 						#for (H, 0, NumPathsTotal - 1)
-							#if (
-								MinDist(
-									SrcPos,
-									Departure,
-									PartDstPosition[PartIndex],
-									Now,
-									PartSrcPosition[PathOrder[H]],
-									DepartureTime[PathOrder[H]],
-									PartDstPosition[PathOrder[H]],
-									ArrivalTime[PathOrder[H]],
-									CollisionTime
-								) < MinPathSeparation
-							)
+//							#if (PartIndex = 136 & PathOrder[H] = 133)
+//								#declare Verbose = 1;
+//							#elseif (defined(Verbose))
+//								#undef Verbose
+//							#end
+							#local Dist = MinDist(
+								SrcPos,
+								Departure,
+								PartDstPosition[PartIndex],
+								Now,
+								PartSrcPosition[PathOrder[H]],
+								DepartureTime[PathOrder[H]],
+								PartDstPosition[PathOrder[H]],
+								ArrivalTime[PathOrder[H]],
+								CollisionTime
+							);
+//							#if (PartIndex = 136)
+//								#debug concat(
+//									"H = ", str(H, 0, 0),
+//									", PartIndex2 = ", str(PathOrder[H], 0, 0),
+//									", Dist = ", str(Dist, 0, 4),
+//									"\n"
+//								)
+//							#end
+							#if (Dist < MinPathSeparation)
 								#debug concat(
 									"Collision detected: ",
 									str(PartIndex, 0, 0),
@@ -343,9 +357,13 @@ InitStartingPlacementL2(PartPosition, PartRotation)
 // Place objects
 
 #for (I, 0, NumPartsL2 - 1)
-	object {
-		Part_L2[I]
-		transform { PartRotation[I] }
-		translate PartPosition[I]
-	}
+	#local PartTypeL1 = mod(I, NumParts);
+	#local PartTypeL2 = div(I, NumParts);
+	#if (true)
+		object {
+			Part_L2[I]
+			transform { PartRotation[I] }
+			translate PartPosition[I]
+		}
+	#end
 #end
