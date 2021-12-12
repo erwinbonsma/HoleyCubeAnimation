@@ -169,14 +169,34 @@ InitAssemblyPlacementL2(PartDstPosition, PartDstRotation, 3, 9)
 					#local Departure = Now - DeltaT;
 					#local MinPartsDeparted = MinPartsDepartedAtTime(Departure);
 
-					#debug concat(
-						"Now = ", str(Now, 0, 0),
-						", Departure = ", str(Departure, 0, 3),
-						", MinPartsDeparted = ", str(MinPartsDeparted, 0, 0)
-						"\n"
-					)
+//					#debug concat(
+//						"Now = ", str(Now, 0, 0),
+//						", Departure = ", str(Departure, 0, 3),
+//						", MinPartsDeparted = ", str(MinPartsDeparted, 0, 0)
+//						"\n"
+//					)
+
+					#local SubLayerRestriction = false; // Default
+
+					// For the middle L2 layer there are some additional restrictions:
+					// - In the first L1 layer the parts with connector should be placed first.
+					// - In the third L1 layer these parts should be placed last.
+					// This is done to avoid possible collisions of these bulky parts with
+					// the other parts in the same L1 layer.
+					#if (LayerL2 = 1)
+						#local NumInL1Layer = mod(NumArrived[PartTypeL2], 4);
+						#local IsBulky = defined(Part_L2_AttachPoint[PartIndex]);
+
+						#local SubLayerRestriction = (
+							NumInL1Layer < 2 & (
+								(LayerL1 = 0 & !IsBulky) |
+								(LayerL1 = 2 & IsBulky)
+							)
+						);
+					#end
 
 					#if (
+						!SubLayerRestriction &
 						LastArrival[PartTypeL2] <= Now - MinArrivalDelay &
 						!defined(DepartureTime[PartIndex]) &
 						LastDeparture[PartTypeL1] <= Departure - MinDepartureDelay &
