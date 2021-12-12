@@ -8,15 +8,24 @@
 // The minimum clock ticks between two parts arriving for a given L2 part
 #declare MinArrivalDelay = 2;
 
+// The minimum clock ticks between two parts departing from a given L1 stack
 #declare MinDepartureDelay = 2;
+
+#declare MoveSpeed = 2;
 
 //--------------------------------------
 // Planning ioputs
 
-#declare PartPosition = array[NumPartsL2];
-#declare PartRotation = array[NumPartsL2];
+#declare PartSrcPosition = array[NumPartsL2];
+#declare PartSrcRotation = array[NumPartsL2];
 
-InitStartingPlacementL2(PartPosition, PartRotation)
+InitStartingPlacementL2(PartSrcPosition, PartSrcRotation)
+
+// Let all parts depart from the top of their stack3
+#local Z0 = PartSrcPosition[0].z;
+#for (I, 0, NumPartsL2 - 1)
+	#declare PartSrcPosition[I] = <PartSrcPosition[I].x, PartSrcPosition[I].y, Z0>;
+#end
 
 #declare PartDstPosition = array[NumPartsL2];
 #declare PartDstRotation = array[NumPartsL2];
@@ -111,7 +120,7 @@ InitAssemblyPlacementL2(PartDstPosition, PartDstRotation, 3, 9)
 				#local PartTypeL1 = Mapping[PartTypeL2][AssemblyOrderL1[J]];
 				#local PartIndex = PartTypeL2 * NumParts + PartTypeL1;
 
-				#local DeltaV = PartDstPosition[PartIndex] - PartPosition[PartIndex];
+				#local DeltaV = PartDstPosition[PartIndex] - PartSrcPosition[PartIndex];
 				#local DeltaT = ClockTicksForMove(DeltaV);
 				#local Departure = Now - DeltaT;
 
