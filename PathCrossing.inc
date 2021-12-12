@@ -3,6 +3,12 @@
 #declare Eps = 0.00001;
 #version 3.8;
 
+#macro VectorTimeString(V, T)
+	concat(
+		"<", vstr(3, V, ", ", 0, 3), "> @ ", str(T, 0, 4)
+	)
+#end
+
 // Macro that calculates the minimum distance between two objects, A and B,
 // travelling along a straight line.
 //
@@ -18,6 +24,15 @@
 	#local TMin = max(TA0, TB0);
 	#local TMax = min(TA1, TB1);
 	#local TRel = -1;
+
+	#ifdef (Verbose)
+		#debug concat(
+			"A0 = ", VectorTimeString(VA0_, TA0), ", ",
+			"A1 = ", VectorTimeString(VA1_, TA1), ", ",
+			"B0 = ", VectorTimeString(VB0_, TB0), ", ",
+			"B1 = ", VectorTimeString(VB1_, TB1), "\n"
+		)
+	#end
 
 	#if (TMax >= TMin)
 		// Adjust positions for TMin and TMax
@@ -107,14 +122,14 @@
 		#end
 	#end
 
-//	#if (DMin < 1000)
-//		#debug concat(
-//			"MinDist = ", str(DMin, 0, 4),
-//			" TRel = ", str(TRel, 0, 4),
-//			" Time = ", str(T, 0, 4),
-//			"\n"
-//		)
-//	#end
+	#if (DMin < 1000 & defined(Verbose))
+		#debug concat(
+			"MinDist = ", str(DMin, 0, 4),
+			" TRel = ", str(TRel, 0, 4),
+			" Time = ", str(T, 0, 4),
+			"\n"
+		)
+	#end
 
 	DMin
 #end
