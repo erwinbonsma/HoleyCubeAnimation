@@ -16,18 +16,12 @@
 #declare PathsFilename = "Anim03_Paths.csv";
 
 //--------------------------------------
-// Planning ioputs
+// Planning inputs
 
 #declare PartSrcPosition = array[NumPartsL2];
 #declare PartSrcRotation = array[NumPartsL2];
 
 InitStartingPlacementL2(PartSrcPosition, PartSrcRotation)
-
-// Let all parts depart from the top of their stack3
-#local Z0 = PartSrcPosition[0].z;
-#for (I, 0, NumPartsL2 - 1)
-	#declare PartSrcPosition[I] = <PartSrcPosition[I].x, PartSrcPosition[I].y, Z0>;
-#end
 
 #declare PartDstPosition = array[NumPartsL2];
 #declare PartDstRotation = array[NumPartsL2];
@@ -39,6 +33,14 @@ InitAssemblyPlacementL2(PartDstPosition, PartDstRotation, 3, 9)
 
 #declare ArrivalTime = array[NumPartsL2];
 #declare DepartureTime = array[NumPartsL2];
+
+// Index is the order in which path was planned, value is L1 part index
+//
+// Note: As planning is based on arrival time, later paths may actually depart
+// earlier. However, this can only occur for different types of part. For parts of
+// the same type, their relative path order matches their departures, which therefore
+// determines the order in their stack
+#declare PathOrder = array[NumPartsL2];
 
 #declare NumArrived = array[NumParts]; // Index is L2 part type
 #declare NumDeparted = array[NumParts]; // Index is L1 part type
@@ -52,7 +54,6 @@ InitAssemblyPlacementL2(PartDstPosition, PartDstRotation, 3, 9)
 	#declare LastArrival[I] = -1000;
 	#declare LastDeparture[I] = -1000;
 #end
-
 
 //--------------------------------------
 // Create the mappings for each part
@@ -90,10 +91,12 @@ InitAssemblyPlacementL2(PartDstPosition, PartDstRotation, 3, 9)
 	#declare LastDeparture[PartTypeL1] = Departure;
 	#declare DepartureTime[PartIndex] = Departure;
 
+	#declare PathOrder[NumPathsTotal] = PartIndex;
 	#declare NumPathsTotal = NumPathsTotal + 1;
 
 	#debug concat(
-		"Arrival = ", str(Now, 0, 0),
+		str(PartIndex, 0, 0),
+		", Arrival = ", str(Now, 0, 0),
 		", I/Type = ", str(I, 2, 0), "/", str(PartTypeL2, 2, 0),
 		", J/Type = ", str(J, 2, 0), "/", str(PartTypeL1, 1, 0),
 		", Departure = ", str(Departure, 0, 3),
@@ -134,7 +137,7 @@ InitAssemblyPlacementL2(PartDstPosition, PartDstRotation, 3, 9)
 
 					#if (
 						LastArrival[PartTypeL2] <= Now - MinArrivalDelay &
-						NumDeparted[PartTypeL1] = I &
+						!defined(DepartureTime[PartIndex]) &
 						LastDeparture[PartTypeL1] <= Departure - MinDepartureDelay
 					)
 						// Found a part that can move
@@ -156,7 +159,7 @@ InitAssemblyPlacementL2(PartDstPosition, PartDstRotation, 3, 9)
 #end
 
 #macro ReadPathFile()
-	#local NumLines = 0;
+	#local NumPaths = 0;
 
 	#if (file_exists(PathsFilename))
 		#fopen PATHS_FILE PathsFilename read
@@ -168,13 +171,14 @@ InitAssemblyPlacementL2(PartDstPosition, PartDstRotation, 3, 9)
 				#warning concat("Duplicate entry for Part ", str(PartIndex, 0, 0), "\n")
 			#else
 				#declare DepartureTime[PartIndex] = DepTime;
+				#declare PathOrder[NumPaths] = PartIndex;
 			#end
 
-			#local NumLines = NumLines + 1;
+			#local NumPaths = NumPaths + 1;
 		#end
 	#end
 
-	(NumLines)
+	(NumPaths)
 #end
 
 #if (ReadPathFile() = NumPartsL2)
@@ -192,29 +196,55 @@ InitAssemblyPlacementL2(PartDstPosition, PartDstRotation, 3, 9)
 
 InitStartingPlacementL2(PartPosition, PartRotation)
 
+// Order stacks based on move order
 #for (I, 0, NumParts - 1)
 	#declare NumDeparted[I] = 0;
 #end
 
-#local FirstDeparture = 0;
-
 #for (I, 0, NumPartsL2 - 1)
-	#if (DepartureTime[I] < FirstDeparture)
-		#local FirstDeparture = DepartureTime[I];
-	#end
+	#local PartIndex = PathOrder[I];
+	#local PartType = mod(PartIndex, NumParts);
+
+	#declare PartPosition[PartIndex] = <
+		PartPosition[PartIndex].x,
+		PartPosition[PartIndex].y,
+		NumDeparted[PartType] * 2 + 9
+	>;
+	#declare NumDeparted[PartType] = NumDeparted[PartType] + 1;
 #end
 
-#local MoveStart = floor(FirstDeparture);
-
+#local FirstDeparture = 0;
 #for (I, 0, NumPartsL2 - 1)
-	#declare DeltaV = PartDstPosition[I] - PartPosition[I];
-	#declare DeltaT = ClockTicksForMove(DeltaV);
+	#local FirstDeparture = min(FirstDeparture, DepartureTime[I]);
+#end
+#local FirstDeparture = floor(FirstDeparture);
 
-	#declare Now = DepartureTime[I] - MoveStart;
-	#declare Now0 = Now;
-	TimedMove(<I + 1, 0, 0>, DeltaV, DeltaT)
-	#declare Now = Now0;
-	TimedRotateToTransform(<I + 1, 0, 0>, PartDstRotation[I], DeltaT)
+// Carry out the moves
+#for (I, 0, NumPartsL2 - 1)
+	#local PartIndex = PathOrder[I];
+	#local PartType = mod(PartIndex, NumParts);
+
+	#local DepTime = DepartureTime[PartIndex] - FirstDeparture;
+	#if (DepTime < clock)
+		#declare DeltaV = PartDstPosition[PartIndex] - PartPosition[PartIndex];
+		#declare DeltaT = ClockTicksForMove(DeltaV);
+
+		#declare Now = DepTime;
+		TimedMove(<PartIndex + 1, 0, 0>, DeltaV, DeltaT)
+		#declare Now = DepTime;
+		TimedRotateToTransform(<PartIndex + 1, 0, 0>, PartDstRotation[PartIndex], DeltaT)
+
+		// Move remaining part of stack forwards
+		#for (J, I + 1, NumPartsL2 - 1)
+			#local PartIndexJ = PathOrder[J];
+			#local PartTypeJ = mod(PartIndexJ, NumParts);
+
+			#if (PartTypeJ = PartType)
+				#declare Now = DepTime;
+				SlowMove(<PartIndexJ + 1, 0, 0>, z * -2)
+			#end
+		#end
+	#end
 #end
 
 //--------------------------------------

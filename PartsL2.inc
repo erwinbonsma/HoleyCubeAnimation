@@ -194,30 +194,31 @@
 // move across parts already placed.
 #declare AssemblyOrderL2 = array[NumParts] { 0, 1, 6, 4, 9, 8, 11, 10, 7, 2, 3, 5 };
 
+// Places the L2 parts in a start grid. Note, the Z position is not yet set.
+// This should be done later, based on the order in which the parts move into the
+// exploded configuration.
 #macro InitStartingPlacementL2(PartPosition, PartRotation)
-	#local AssemblyOrderForType = array[NumParts]
-	#for (I, 0, NumParts - 1)
-		#local AssemblyOrderForType[AssemblyOrderL2[I]] = I;
-	#end
-
 	#for (I, 0, NumPartsL2 - 1)
-		#local PartTypeL2 = div(I, NumParts);
-		#local PartType = mod(I, NumParts);
-		#local XOffset = 0;
-
 		#declare PartRotation[I] = transform {
 			#ifdef (Part_L2_Twist[I])
-				// Compensate for the center shift so that L1 parts still line-up
-				#local XOffset = 1.5;
-
 				rotate x * 90 * (Part_L2_Twist[I] - 1)
 			#end
 			rotate z * 90
 		}
+
+		#local PartTypeL2 = div(I, NumParts);
+		#local PartType = mod(I, NumParts);
+		#local XOffset = 0;
+
+		#ifdef (Part_L2_Twist[I])
+			// Compensate for the center shift so that L1 parts still line-up
+			#local XOffset = 1.5;
+		#end
+
 		#declare PartPosition[I] = <
 			div(PartType, 4) * 5 - 6.5 - 10 + XOffset,
 			mod(PartType, 4) * -4 + 6,
-			AssemblyOrderForType[PartTypeL2] * 2 + 9
+			0
 		>;
 	#end
 #end
