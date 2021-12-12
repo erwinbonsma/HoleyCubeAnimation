@@ -98,7 +98,12 @@ InitAssemblyPlacementL2(PartDstPosition, PartDstRotation, 3, 9)
 		", Total = ", str(NumPathsTotal, 0, 0),
 		"\n"
 	)
+	#write (PATHS_FILE, concat(
+		str(PartIndex, 0, 0), ",", str(Departure, 0, 5), "\n"
+	))
 #end
+
+#fopen PATHS_FILE "Anim03_Paths.csv" write
 
 #declare Now = 0;
 #declare NumPathsTotal = 0;
