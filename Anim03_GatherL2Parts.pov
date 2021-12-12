@@ -177,6 +177,20 @@ InitAssemblyPlacementL2(PartDstPosition, PartDstRotation, 3, 9)
 //					)
 
 					#local SubLayerRestriction = false; // Default
+					#local IsBulky = defined(Part_L2_AttachPoint[PartIndex]);
+
+					// For the first L2 layer there is an additional restriction:
+					// - For PartType < 8, the first placed part must be without connector
+					// - For PartType >= 8, the first placed part must be with connector
+					// This is done to facilitate placing the parts of the initial L1 puzzle
+					// into the part stacks. Note, as it happens this restriction was almost
+					// adhered without being enforced, so it does not impact scheduling much.
+					#if (LayerL2 = 0 & NumDeparted[PartTypeL1] = 0)
+						#local SubLayerRestriction = (
+							(PartTypeL1 < 8 & IsBulky) |
+							(PartTypeL1 >= 8 & !IsBulky)
+						);
+					#end
 
 					// For the middle L2 layer there are some additional restrictions:
 					// - In the first L1 layer the parts with connector should be placed first.
@@ -185,7 +199,6 @@ InitAssemblyPlacementL2(PartDstPosition, PartDstRotation, 3, 9)
 					// the other parts in the same L1 layer.
 					#if (LayerL2 = 1)
 						#local NumInL1Layer = mod(NumArrived[PartTypeL2], 4);
-						#local IsBulky = defined(Part_L2_AttachPoint[PartIndex]);
 
 						#local SubLayerRestriction = (
 							NumInL1Layer < 2 & (
