@@ -183,3 +183,59 @@ InitAssemblyPlacementL2(PartDstPosition, PartDstRotation, 3, 9)
 	#debug "Generating paths...\n"
 	WritePathFile()
 #end
+
+//--------------------------------------
+// Move to fully exploded layout
+
+#declare PartPosition = array[NumPartsL2];
+#declare PartRotation = array[NumPartsL2];
+
+InitStartingPlacementL2(PartPosition, PartRotation)
+
+#for (I, 0, NumParts - 1)
+	#declare NumDeparted[I] = 0;
+#end
+
+#local FirstDeparture = 0;
+
+#for (I, 0, NumPartsL2 - 1)
+	#if (DepartureTime[I] < FirstDeparture)
+		#local FirstDeparture = DepartureTime[I];
+	#end
+#end
+
+#local MoveStart = floor(FirstDeparture);
+
+#for (I, 0, NumPartsL2 - 1)
+	#declare DeltaV = PartDstPosition[I] - PartPosition[I];
+	#declare DeltaT = ClockTicksForMove(DeltaV);
+
+	#declare Now = DepartureTime[I] - MoveStart;
+	#declare Now0 = Now;
+	TimedMove(<I + 1, 0, 0>, DeltaV, DeltaT)
+	#declare Now = Now0;
+	TimedRotateToTransform(<I + 1, 0, 0>, PartDstRotation[I], DeltaT)
+#end
+
+//--------------------------------------
+// Animate camera (throughout animation)
+
+// Match Anim02 end position
+#declare CameraLookAt = <0, -6, 14>;
+#declare CameraPosition = <-75.9, 49.5, -68.5>;
+
+#declare CameraLookAt = <0, 0, 0>;
+#declare CameraPosition = <-83, 54, -75>;
+
+#include "Scene.inc"
+
+//--------------------------------------
+// Place objects
+
+#for (I, 0, NumPartsL2 - 1)
+	object {
+		Part_L2[I]
+		transform { PartRotation[I] }
+		translate PartPosition[I]
+	}
+#end
