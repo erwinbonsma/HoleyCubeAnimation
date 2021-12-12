@@ -86,6 +86,26 @@ InitAssemblyPlacementL2(PartDstPosition, PartDstRotation, 3, 9)
 	(NumDeparted[PartType] * 2 + 9)
 #end
 
+#macro MinPartsDepartedAtTime(Time)
+	#local MinNumDeparted = NumParts;
+
+	#for (PartType, 0, NumParts - 1)
+		#local NumDeparted = 0;
+		#for (I, 0, NumParts - 1)
+			#local PartIndex = PartType + I * NumParts;
+			#if (defined(DepartureTime[PartIndex]))
+				#if (DepartureTime[PartIndex] < Time)
+					#local NumDeparted = NumDeparted + 1;
+				#end
+			#end
+		#end
+
+		#local MinNumDeparted = min(MinNumDeparted, NumDeparted);
+	#end
+
+	(MinNumDeparted)
+#end
+
 #macro PlanMove(PartTypeL2, PartTypeL1, Departure, I, J)
 	#local PartIndex = PartTypeL2 * NumParts + PartTypeL1;
 
@@ -145,11 +165,20 @@ InitAssemblyPlacementL2(PartDstPosition, PartDstRotation, 3, 9)
 					#local DeltaV = PartDstPosition[PartIndex] - SrcPos;
 					#local DeltaT = ClockTicksForMove(DeltaV);
 					#local Departure = Now - DeltaT;
+					#local MinPartsDeparted = MinPartsDepartedAtTime(Departure);
+
+					#debug concat(
+						"Now = ", str(Now, 0, 0),
+						", Departure = ", str(Departure, 0, 3),
+						", MinPartsDeparted = ", str(MinPartsDeparted, 0, 0)
+						"\n"
+					)
 
 					#if (
 						LastArrival[PartTypeL2] <= Now - MinArrivalDelay &
 						!defined(DepartureTime[PartIndex]) &
-						LastDeparture[PartTypeL1] <= Departure - MinDepartureDelay
+						LastDeparture[PartTypeL1] <= Departure - MinDepartureDelay &
+						NumDeparted[PartTypeL1] <= MinPartsDeparted + 1
 					)
 						// Found a part that can move
 //						#debug concat(
@@ -159,13 +188,6 @@ InitAssemblyPlacementL2(PartDstPosition, PartDstRotation, 3, 9)
 //							", DeltaV = <", vstr(3, DeltaV, ", ", 0, 4),
 //							">\n"
 //						)
-						#if (DeltaT < 1)
-							#warning concat(
-								"SrcPos = <", vstr(3, SrcPos, ", ", 0, 4),
-								">, DstPos = <", vstr(3, PartDstPosition[PartIndex], ", ", 0, 4),
-								">\n"
-							)
-						#end
 
 						// Check if this path collides with already planned paths
 						#local CollisionTime = 0;
@@ -208,8 +230,18 @@ InitAssemblyPlacementL2(PartDstPosition, PartDstRotation, 3, 9)
 		#end
 
 		#declare Now = Now + 1;
-		#if (Now > 500)
+		#if (Now > 250)
 			#break
+		#end
+	#end
+
+	// Schedule moves of remaining parts in far future (to enable rendering state
+	// where planning got stuck)
+	#for (I, 0, NumPartsL2 - 1)
+		#ifndef (DepartureTime[I])
+			#local PartTypeL1 = mod(I, NumParts);
+			#local PartTypeL2 = div(I, NumParts);
+			PlanMove(PartTypeL2, PartTypeL1, 1000, -1, -1)
 		#end
 	#end
 #end
