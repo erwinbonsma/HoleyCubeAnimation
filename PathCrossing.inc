@@ -11,27 +11,26 @@
 //
 // The distance is only considered when both objects travel. When the objects
 // do not move, assume they are placed infinitely far away.
-#macro MinDist(VA0, TA0, VA1, TA1, VB0, TB0, VB1, TB1, optional T)
-	#ifndef (local.DMax)
-		#local DMax = 1000;
-	#end
-
+#macro MinDist(VA0_, TA0, VA1_, TA1, VB0_, TB0, VB1_, TB1, optional T)
+	#local DMax = 1000;
 	#local DMin = DMax;
 
 	#local TMin = max(TA0, TB0);
 	#local TMax = min(TA1, TB1);
+	#local TRel = -1;
 
 	#if (TMax >= TMin)
 		// Adjust positions for TMin and TMax
-		#local VA0 = LerpVector(VA0, VA1, f_ramp(TA0, TA1, TMin));
-		#local VB0 = LerpVector(VB0, VB1, f_ramp(TB0, TB1, TMin));
-		#local VA1 = LerpVector(VA0, VA1, f_ramp(TA0, TA1, TMax));
-		#local VB1 = LerpVector(VB0, VB1, f_ramp(TB0, TB1, TMax));
+		#local VA0 = LerpVector(VA0_, VA1_, f_ramp(TA0, TA1, TMin));
+		#local VB0 = LerpVector(VB0_, VB1_, f_ramp(TB0, TB1, TMin));
+		#local VA1 = LerpVector(VA0_, VA1_, f_ramp(TA0, TA1, TMax));
+		#local VB1 = LerpVector(VB0_, VB1_, f_ramp(TB0, TB1, TMax));
 
 		// Check distance at T = TMin
 		#local D0 = vlength(VA0 - VB0);
 		#if (D0 < DMin)
 			#local DMin = D0;
+			#local TRel = 0;
 			#ifdef (local.T)
 				#declare T = TMin;
 			#end
@@ -41,12 +40,13 @@
 		#local D1 = vlength(VA1 - VB1);
 		#if (D1 < DMin)
 			#local DMin = D1;
+			#local TRel = 1;
 			#ifdef (local.T)
 				#declare T = TMax;
 			#end
 		#end
 
-		// Check if there a minimin inside this range.
+		// Check if there a minimun inside this range.
 		// For simplicity map time so that TMin = 0 and TMax = 1.
 		//
 		// For coordinate X, the distance DX(T) is:
@@ -85,6 +85,7 @@
 					#declare T = TX;
 				#end
 
+				// Sanity check that distance is a local minimum
 				#local Dbefore = vlength(
 					LerpVector(VA0, VA1, f_ramp(TMin, TMax, TX - 0.01)) -
 					LerpVector(VB0, VB1, f_ramp(TMin, TMax, TX - 0.01))
@@ -94,18 +95,26 @@
 					LerpVector(VB0, VB1, f_ramp(TMin, TMax, TX + 0.01))
 				);
 
-				#debug concat(
-					str(Dbefore, 0, 4), " > ",
-					str(DMin, 0, 4), " < ",
-					str(Dafter, 0, 4), "\n"
-				)
 				#if (Dbefore < DMin | Dafter < DMin)
-					#debug "Error in DistMin\n"
-					ASSERT_FAILURE
+					#error concat(
+						"Error in DistMin: ",
+						str(Dbefore, 0, 4), " > ",
+						str(DMin, 0, 4), " < ",
+						str(Dafter, 0, 4), "\n"
+					)
 				#end
 			#end
 		#end
 	#end
+
+//	#if (DMin < 1000)
+//		#debug concat(
+//			"MinDist = ", str(DMin, 0, 4),
+//			" TRel = ", str(TRel, 0, 4),
+//			" Time = ", str(T, 0, 4),
+//			"\n"
+//		)
+//	#end
 
 	DMin
 #end
