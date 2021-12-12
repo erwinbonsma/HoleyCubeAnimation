@@ -12,7 +12,7 @@
 // The minimum clock ticks between two parts departing from a given L1 stack
 #declare MinDepartureDelay = 2;
 
-#declare MinPathSeparation = 3;
+#declare MinPathSeparation = 4;
 
 #declare MoveSpeed = 2;
 
@@ -82,10 +82,17 @@ InitAssemblyPlacementL2(PartDstPosition, PartDstRotation, 3, 9)
 //--------------------------------------
 // Plan the paths
 
+#macro SourcePosZOffset(PartType)
+	(NumDeparted[PartType] * 2 + 9)
+#end
+
 #macro PlanMove(PartTypeL2, PartTypeL1, Departure, I, J)
 	#local PartIndex = PartTypeL2 * NumParts + PartTypeL1;
 
-	// Plan this part
+	// Plan the move of this part
+	#declare PartSrcPosition[PartIndex] =
+		PartSrcPosition[PartIndex] + SourcePosZOffset(PartTypeL1);
+
 	#declare NumArrived[PartTypeL2] = NumArrived[PartTypeL2] + 1;
 	#declare LastArrival[PartTypeL2] = Now;
 	#declare ArrivalTime[PartIndex] = Now;
@@ -134,7 +141,8 @@ InitAssemblyPlacementL2(PartDstPosition, PartDstRotation, 3, 9)
 					#local PartTypeL1 = Mapping[PartTypeL2][AssemblyOrderL1[J]];
 					#local PartIndex = PartTypeL2 * NumParts + PartTypeL1;
 
-					#local DeltaV = PartDstPosition[PartIndex] - PartSrcPosition[PartIndex];
+					#local SrcPos = PartSrcPosition[PartIndex] + SourcePosZOffset(PartTypeL1);
+					#local DeltaV = PartDstPosition[PartIndex] - SrcPos;
 					#local DeltaT = ClockTicksForMove(DeltaV);
 					#local Departure = Now - DeltaT;
 
@@ -144,6 +152,20 @@ InitAssemblyPlacementL2(PartDstPosition, PartDstRotation, 3, 9)
 						LastDeparture[PartTypeL1] <= Departure - MinDepartureDelay
 					)
 						// Found a part that can move
+//						#debug concat(
+//							"Departure = ", str(Departure, 0, 4),
+//							", Now = ", str(Now, 0, 4),
+//							", DeltaT = ", str(DeltaT, 0, 4),
+//							", DeltaV = <", vstr(3, DeltaV, ", ", 0, 4),
+//							">\n"
+//						)
+						#if (DeltaT < 1)
+							#warning concat(
+								"SrcPos = <", vstr(3, SrcPos, ", ", 0, 4),
+								">, DstPos = <", vstr(3, PartDstPosition[PartIndex], ", ", 0, 4),
+								">\n"
+							)
+						#end
 
 						// Check if this path collides with already planned paths
 						#local CollisionTime = 0;
@@ -151,7 +173,7 @@ InitAssemblyPlacementL2(PartDstPosition, PartDstRotation, 3, 9)
 						#for (H, 0, NumPathsTotal - 1)
 							#if (
 								MinDist(
-									PartSrcPosition[PartIndex],
+									SrcPos,
 									Departure,
 									PartDstPosition[PartIndex],
 									Now,
@@ -244,10 +266,11 @@ InitStartingPlacementL2(PartPosition, PartRotation)
 	#declare PartPosition[PartIndex] = <
 		PartPosition[PartIndex].x,
 		PartPosition[PartIndex].y,
-		NumDeparted[PartType] * 2 + 9
+		SourcePosZOffset(PartType)
 	>;
 	#declare NumDeparted[PartType] = NumDeparted[PartType] + 1;
 #end
+
 
 #local FirstDeparture = 0;
 #for (I, 0, NumPartsL2 - 1)
@@ -269,17 +292,6 @@ InitStartingPlacementL2(PartPosition, PartRotation)
 		TimedMove(<PartIndex + 1, 0, 0>, DeltaV, DeltaT)
 		#declare Now = DepTime;
 		TimedRotateToTransform(<PartIndex + 1, 0, 0>, PartDstRotation[PartIndex], DeltaT)
-
-		// Move remaining part of stack forwards
-		#for (J, I + 1, NumPartsL2 - 1)
-			#local PartIndexJ = PathOrder[J];
-			#local PartTypeJ = mod(PartIndexJ, NumParts);
-
-			#if (PartTypeJ = PartType)
-				#declare Now = DepTime;
-				SlowMove(<PartIndexJ + 1, 0, 0>, z * -2)
-			#end
-		#end
 	#end
 #end
 
