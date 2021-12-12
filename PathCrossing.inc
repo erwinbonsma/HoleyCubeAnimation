@@ -21,9 +21,7 @@
 	#local TMin = max(TA0, TB0);
 	#local TMax = min(TA1, TB1);
 
-	#if (TMax < TMin)
-		DMin
-	#else
+	#if (TMax >= TMin)
 		// Adjust positions for TMin and TMax
 		#local VA0 = LerpVector(VA0, VA1, f_ramp(TA0, TA1, TMin));
 		#local VB0 = LerpVector(VB0, VB1, f_ramp(TB0, TB1, TMin));
@@ -140,20 +138,22 @@
 	#end
 #end
 
-// Crossing lines in Z plane
-Test1(<0, 0, 0>, <10, 10, 0>, <0, 10, 0>, <10, 0, 0>, 0, 0.5)
+#ifdef (RunPathCrossingTests)
+	// Crossing lines in Z plane
+	Test1(<0, 0, 0>, <10, 10, 0>, <0, 10, 0>, <10, 0, 0>, 0, 0.5)
 
-// Same, but constant Z seperation
-Test1(<0, 0, 0>, <10, 10, 0>, <0, 10, 2>, <10, 0, 2>, 2, 0.5)
+	// Same, but constant Z seperation
+	Test1(<0, 0, 0>, <10, 10, 0>, <0, 10, 2>, <10, 0, 2>, 2, 0.5)
 
-// Diverging lines
-Test1(<0, 1, 0>, <10, 10, 0>, <0, -1, 0>, <10, -1, 0>, 2, 0)
+	// Diverging lines
+	Test1(<0, 1, 0>, <10, 10, 0>, <0, -1, 0>, <10, -1, 0>, 2, 0)
 
-// Converging lines
-Test1(<0, 10, 0>, <10, 1, 0>, <0, -10, 0>, <10, -2, 0>, 3, 1)
+	// Converging lines
+	Test1(<0, 10, 0>, <10, 1, 0>, <0, -10, 0>, <10, -2, 0>, 3, 1)
 
-// Crossing lines in 3D
-Test1(<0, 0, 0>, <10, 10, 10>, <8, 0, 0>, <2, 10, 10>, 0, 0.5)
+	// Crossing lines in 3D
+	Test1(<0, 0, 0>, <10, 10, 10>, <8, 0, 0>, <2, 10, 10>, 0, 0.5)
 
-// Similar, but one line remains in Y = 0 plane
-Test1(<0, 0, 0>, <10, 10, 10>, <8, 0, 0>, <2, 0, 10>, 4.24, 0.36)
+	// Similar, but one line remains in Y = 0 plane
+	Test1(<0, 0, 0>, <10, 10, 10>, <8, 0, 0>, <2, 0, 10>, 4.24, 0.36)
+#end

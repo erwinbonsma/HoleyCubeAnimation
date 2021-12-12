@@ -1,6 +1,7 @@
 #include "PartsL2.inc"
 #include "Moves.inc"
 #include "Anim.inc"
+#include "PathCrossing.inc"
 
 //--------------------------------------
 // Planning parameters
@@ -10,6 +11,8 @@
 
 // The minimum clock ticks between two parts departing from a given L1 stack
 #declare MinDepartureDelay = 2;
+
+#declare MinPathSeparation = 3;
 
 #declare MoveSpeed = 2;
 
@@ -142,10 +145,41 @@ InitAssemblyPlacementL2(PartDstPosition, PartDstRotation, 3, 9)
 					)
 						// Found a part that can move
 
-						// TODO: Check if it collides with any paths
+						// Check if this path collides with already planned paths
+						#local CollisionTime = 0;
+						#local Collision = false;
+						#for (H, 0, NumPathsTotal - 1)
+							#if (
+								MinDist(
+									PartSrcPosition[PartIndex],
+									Departure,
+									PartDstPosition[PartIndex],
+									Now,
+									PartSrcPosition[PathOrder[H]],
+									DepartureTime[PathOrder[H]],
+									PartDstPosition[PathOrder[H]],
+									ArrivalTime[PathOrder[H]],
+									CollisionTime
+								) < MinPathSeparation
+							)
+								#debug concat(
+									"Collision detected: ",
+									str(PartIndex, 0, 0),
+									" - ",
+									str(PathOrder[H], 0, 0),
+									" at ",
+									str(CollisionTime, 0, 3),
+									"\n"
+								)
+								#local Collision = true;
+								#break
+							#end
+						#end
 
-						PlanMove(PartTypeL2, PartTypeL1, Departure, I, J)
-						#break
+						#if (!Collision)
+							PlanMove(PartTypeL2, PartTypeL1, Departure, I, J)
+							#break
+						#end
 					#end
 				#end
 			#end
@@ -167,14 +201,16 @@ InitAssemblyPlacementL2(PartDstPosition, PartDstRotation, 3, 9)
 		#while (defined(PATHS_FILE))
 			#read (PATHS_FILE,PartIndex,DepTime)
 
-			#ifdef (DepartureTime[PartIndex])
-				#warning concat("Duplicate entry for Part ", str(PartIndex, 0, 0), "\n")
-			#else
-				#declare DepartureTime[PartIndex] = DepTime;
-				#declare PathOrder[NumPaths] = PartIndex;
-			#end
+			#if (defined(PartIndex) & defined(DepTime))
+				#ifdef (DepartureTime[PartIndex])
+					#warning concat("Duplicate entry for Part ", str(PartIndex, 0, 0), "\n")
+				#else
+					#declare DepartureTime[PartIndex] = DepTime;
+					#declare PathOrder[NumPaths] = PartIndex;
+				#end
 
-			#local NumPaths = NumPaths + 1;
+				#local NumPaths = NumPaths + 1;
+			#end
 		#end
 	#end
 
