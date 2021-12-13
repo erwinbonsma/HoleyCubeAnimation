@@ -1,5 +1,6 @@
 #include "Globals.inc"
 #include "PartsL2.inc"
+#include "PathsL2.inc"
 #include "Moves.inc"
 #include "Anim.inc"
 
@@ -13,41 +14,45 @@ InitStartingPlacementL2(PartPosition, PartRotation)
 
 #declare RestorePosition = array[NumParts];
 #declare RestoreRotation = array[NumParts];
+#declare MovingPart = array[NumParts];
+
 #for (I, 0, NumParts - 1)
-	#ifdef (Part_L2_Twist[I])
-		#local PartIndex = I + NumParts;
-	#else
-		#local PartIndex = I;
+
+	#for (J, 0, 4)
+		#local PartIndex = PartsAtStack[I][J];
+
+		#ifndef (Part_L2_Twist[PartIndex])
+			// Found the first non-bulky part on the stack
+			#declare MovingPart[I] = PartIndex;
+			#break
+		#end
 	#end
 
 	// Remember the restore position
-	//   Note: Setting target position to PartPosition[I] instead of
-	//   PartPosition[PartIndex]. For the parts where I != PartIndex, the last Z-move
-	//   will be done separately via a pure Z-move. This ensures that part does not
-	//   go across parts in neighbouring rows.
-	#declare RestorePosition[I] = PartPosition[I];
+	#declare RestorePosition[I] = PartPosition[PartIndex];
 	#declare RestoreRotation[I] = PartRotation[PartIndex];
 
 	#declare PartPosition[PartIndex] = PositionForPart(I, 1);
 	#declare PartRotation[PartIndex] = RotationForPart(I);
 #end
 
-//#for (I, 0, NumParts - 1)
-//	box {
-//		<-1, -1, -1>, <1, 1, 1>
-//		scale 1.5
-//
-//		translate PositionForPart(I, 9)
-//
-//		pigment { color PartColor[I] }
-//	}
-//#end
+//--------------------------------------
+// Match shorthands with actual parts
 
-// Add offset to pieces that are not placed in first layer
-#declare P_H_H = P_H_H + 12;
-#declare P_HxH = P_HxH + 12;
-#declare P_HxX = P_HxX + 12;
-#declare P_XxX = P_XxX + 12;
+#declare P_I_I = MovingPart[P_I_I - 1] + 1;
+#declare P_IxI = MovingPart[P_IxI - 1] + 1;
+#declare P_I_H = MovingPart[P_I_H - 1] + 1;
+#declare P_IxH = MovingPart[P_IxH - 1] + 1;
+
+#declare P_I_X = MovingPart[P_I_X - 1] + 1;
+#declare P_IxX = MovingPart[P_IxX - 1] + 1;
+#declare P_H_H = MovingPart[P_H_H - 1] + 1;
+#declare P_HxH = MovingPart[P_HxH - 1] + 1;
+
+#declare P_H_X = MovingPart[P_H_X - 1] + 1;
+#declare P_HxX = MovingPart[P_HxX - 1] + 1;
+#declare P_X_X = MovingPart[P_X_X - 1] + 1;
+#declare P_XxX = MovingPart[P_XxX - 1] + 1;
 
 //--------------------------------------
 // Disassemble L1 puzzle
@@ -99,39 +104,54 @@ Move(<P_I_H, 0, 0>, -x * 2)
 
 #declare MoveSpeed = 2;
 
+// The restore order (order index to part type)
 #declare RestoreOrder = array[NumParts] {
-	5, 3, 2, 7, 10 + 12, 11 + 12, 8 + 12, 9 + 12, 4, 1, 0, 6
+	3, 5, 7, 2, 10, 11, 9, 8, 1, 4, 6, 0
 };
 
 #declare ClockStart = Now;
 #declare MaxNow = Now;
+#local Z0 = SourcePosZOffset(0);
 
 #for (I, 0, NumParts - 1)
   // Move parts in parallel, with delay of 2 clock ticks
 	#declare Now = ClockStart + I * 2;
 
-	#declare PartNum = RestoreOrder[I];
-	#declare PartType = mod(PartNum, NumParts);
-	#declare DeltaV = RestorePosition[PartType] - PartPosition[PartNum];
+	#declare PartIndex = MovingPart[RestoreOrder[I]];
+	#declare PartType = mod(PartIndex NumParts);
+
+	// First move to top of stack
+	#declare DstPos = <
+		RestorePosition[PartType].x,
+		RestorePosition[PartType].y,
+		Z0
+	>;
+	#declare DeltaV = DstPos - PartPosition[PartIndex];
 	#declare DeltaT = ClockTicksForMove(DeltaV);
 
 	#declare Now0 = Now;
-	TimedMove(<PartNum + 1, 0, 0>, DeltaV, DeltaT)
-	#if (PartNum > NumParts)
-		Move(<PartNum + 1, 0, 0>, z * 2)
+	TimedMove(<PartIndex + 1, 0, 0>, DeltaV, DeltaT)
+	#local DeltaZ = RestorePosition[PartType].z - Z0;
+	#if (DeltaZ > 0)
+		Move(<PartIndex + 1, 0, 0>, z * DeltaZ)
 	#end
 
 	#declare Now = Now0;
-	TimedRotateToTransform(<PartNum + 1, 0, 0>, RestoreRotation[PartType], DeltaT)
+	TimedRotateToTransform(<PartIndex + 1, 0, 0>, RestoreRotation[PartType], DeltaT)
 
-	#if (PartNum > NumParts)
-		// Make room for the part to be placed in the second layer
-		#declare Now0 = Now0 + DeltaT;
+	#declare Now0 = Now0 + DeltaT;
+	#local StackDepth = 0;
+	#while (StackDepth * 2 < DeltaZ)
+		// Make room for the part to be placed inside the stack
 		#declare Now = Now0 - 4;
-		Move(<PartNum - 11, 0, 0>, x * 2)
+		#local PartIndex = PartsAtStack[PartType][StackDepth];
+		Move(<PartIndex + 1, 0, 0>, x * 2)
 
 		#declare Now = Now0 + 2;
-		Move(<PartNum - 11, 0, 0>, -x * 2)
+		Move(<PartIndex + 1, 0, 0>, -x * 2)
+
+		#declare Now0 = Now0 + 2;
+		#local StackDepth = StackDepth + 1;
 	#end
 
 	#declare MaxNow = max(Now, MaxNow);
@@ -147,11 +167,14 @@ Move(<P_I_H, 0, 0>, -x * 2)
 #declare CameraLookAt_End = CameraLookAt + z * 14 - y * 6;
 #declare CameraPosition_End = CameraPosition * 5.5 + z * 14;
 
-#declare Now0 = Now;
-#declare Now = 1;
-MoveVector(CameraLookAt, CameraLookAt_End, Now0)
-#declare Now = 1;
-MoveVector(CameraPosition, CameraPosition_End, Now0)
+//#declare Now0 = Now;
+//#declare Now = 1;
+//MoveVector(CameraLookAt, CameraLookAt_End, Now0)
+//#declare Now = 1;
+//MoveVector(CameraPosition, CameraPosition_End, Now0)
+
+#declare CameraLookAt = CameraLookAt_End;
+#declare CameraPosition = CameraPosition_End;
 
 #include "Scene.inc"
 

@@ -11,7 +11,7 @@
 
 #declare MinPathSeparation = 4;
 
-#declare MoveSpeed = 2;
+#declare GatherMoveSpeed = 2;
 
 #declare PathsFilename = "PathsL2.csv";
 
@@ -79,8 +79,8 @@ InitAssemblyPlacementL2(PartDstPosition, PartDstRotation, 3, 9)
 //--------------------------------------
 // Plan the paths
 
-#macro SourcePosZOffset(PartType)
-	(NumDeparted[PartType] * 2 + 9)
+#macro SourcePosZOffset(IndexInStack)
+	(IndexInStack * 2 + 9)
 #end
 
 #macro MinPartsDepartedAtTime(Time)
@@ -108,7 +108,7 @@ InitAssemblyPlacementL2(PartDstPosition, PartDstRotation, 3, 9)
 
 	// Plan the move of this part
 	#declare PartSrcPosition[PartIndex] =
-		PartSrcPosition[PartIndex] + SourcePosZOffset(PartTypeL1) * z;
+		PartSrcPosition[PartIndex] + SourcePosZOffset(NumDeparted[PartTypeL1]) * z;
 
 	#declare NumArrived[PartTypeL2] = NumArrived[PartTypeL2] + 1;
 	#declare LastArrival[PartTypeL2] = Now;
@@ -159,10 +159,11 @@ InitAssemblyPlacementL2(PartDstPosition, PartDstRotation, 3, 9)
 					#local PartIndex = PartTypeL2 * NumParts + PartTypeL1;
 
 					#local SrcPos = (
-						PartSrcPosition[PartIndex] + SourcePosZOffset(PartTypeL1) * z
+						PartSrcPosition[PartIndex] +
+						SourcePosZOffset(NumDeparted[PartTypeL1]) * z
 					);
 					#local DeltaV = PartDstPosition[PartIndex] - SrcPos;
-					#local DeltaT = ClockTicksForMove(DeltaV);
+					#local DeltaT = vlength(DeltaV) / GatherMoveSpeed;
 					#local Departure = Now - DeltaT;
 					#local MinPartsDeparted = MinPartsDepartedAtTime(Departure);
 
@@ -313,23 +314,32 @@ InitAssemblyPlacementL2(PartDstPosition, PartDstRotation, 3, 9)
 //--------------------------------------
 // Order stacks based on move order
 
+#declare PartsAtStack = array[NumParts][NumParts];
+
+#for (I, 0, NumParts - 1)
+	#declare NumDeparted[I] = 0;
+#end
+
+#for (I, 0, NumPartsL2 - 1)
+	#local PartIndex = PathOrder[I];
+	#local PartType = mod(PartIndex, NumParts);
+
+	#declare PartsAtStack[PartType][NumDeparted[PartType]] = PartIndex;
+	#declare NumDeparted[PartType] = NumDeparted[PartType] + 1;
+#end
+
 #macro InitStartingPlacementL2(PartPosition, PartRotation)
 	InitStartingPlacementL2_Z0(PartPosition, PartRotation)
 
 	#for (I, 0, NumParts - 1)
-		#declare NumDeparted[I] = 0;
-	#end
+		#for (J, 0, NumParts - 1)
+			#local PartIndex = PartsAtStack[I][J];
 	
-	#for (I, 0, NumPartsL2 - 1)
-		#local PartIndex = PathOrder[I];
-		#local PartType = mod(PartIndex, NumParts);
-	
-		#declare PartPosition[PartIndex] = <
-			PartPosition[PartIndex].x,
-			PartPosition[PartIndex].y,
-			SourcePosZOffset(PartType)
-		>;
-		#declare NumDeparted[PartType] = NumDeparted[PartType] + 1;
+			#declare PartPosition[PartIndex] = <
+				PartPosition[PartIndex].x,
+				PartPosition[PartIndex].y,
+				SourcePosZOffset(J)
+			>;
+		#end
 	#end
 #end
-
