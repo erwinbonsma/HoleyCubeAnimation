@@ -3,6 +3,9 @@
 #include "Anim.inc"
 #include "PathCrossing.inc"
 
+// Clock: 0..180
+// Frames: 0..4500
+
 //--------------------------------------
 // Planning parameters
 
