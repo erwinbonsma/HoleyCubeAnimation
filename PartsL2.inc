@@ -197,7 +197,7 @@
 // Places the L2 parts in a start grid. Note, the Z position is not yet set.
 // This should be done later, based on the order in which the parts move into the
 // exploded configuration.
-#macro InitStartingPlacementL2(PartPosition, PartRotation)
+#macro InitStartingPlacementL2_Z0(PartPosition, PartRotation)
 	#for (I, 0, NumPartsL2 - 1)
 		#declare PartRotation[I] = transform {
 			#ifdef (Part_L2_Twist[I])
