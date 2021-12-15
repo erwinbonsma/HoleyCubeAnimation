@@ -1,10 +1,11 @@
+#include "Globals.inc"
 #include "PartsL2.inc"
 #include "Moves.inc"
 #include "Anim.inc"
 #include "PathsL2.inc"
 
-// Clock: 0..180
-// Frames: 0..4500
+// Clock: 0..190
+// Frames: 0..4750
 
 //--------------------------------------
 // Move to fully exploded layout
@@ -41,11 +42,18 @@ InitStartingPlacementL2(PartPosition, PartRotation)
 // Animate camera (throughout animation)
 
 // Match Anim02 end position
-#declare CameraLookAt = <0, -6, 14>;
-#declare CameraPosition = <-75.9, 49.5, -68.5>;
+#declare CameraLookAt = <0, 2, 2>;
+#declare CameraPosition = <-55.2, 36, -58>;
 
-#declare CameraLookAt = <0, 0, 0>;
-#declare CameraPosition = <-83, 54, -75>;
+#declare CameraLookAt_End = <0, 0, 0>;
+#declare CameraPosition_End = <-83, 54, -75>;
+
+#declare Now0 = Now;
+#declare Now = 0;
+MoveVector(CameraLookAt, CameraLookAt_End, 30)
+#declare Now = 0;
+MoveVector(CameraPosition, CameraPosition_End, 50)
+
 
 #include "Scene.inc"
 

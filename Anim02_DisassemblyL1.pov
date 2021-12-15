@@ -186,8 +186,8 @@ Move(<P_I_H, 0, 0>, -x * 2)
 #declare CameraLookAt = <0, 0, 0>;
 #declare CameraPosition = <-13.8, 9, -15>; // Matches Anim01 end position
 
-#declare CameraLookAt_End = CameraLookAt + z * 14 - y * 6;
-#declare CameraPosition_End = CameraPosition * 5.5 + z * 14;
+#declare CameraLookAt_End = CameraLookAt + z * 2 + y * 2;
+#declare CameraPosition_End = CameraPosition * 4 + z * 2;
 
 #declare Now0 = Now;
 #declare Now = 1;
@@ -208,3 +208,5 @@ MoveVector(CameraPosition, CameraPosition_End, Now0)
 	}
 #end
 
+#debug concat("CameraLookAt = ", vstr(3, CameraLookAt, ", ", 1, 3), "\n")
+#debug concat("CameraPosition = ", vstr(3, CameraPosition, ", ", 1, 3), "\n")
