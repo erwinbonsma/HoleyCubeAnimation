@@ -37,6 +37,28 @@ InitStartingPlacementL2(PartPosition, PartRotation)
 #end
 
 //--------------------------------------
+// Move stacks
+//
+// Let stacks start further away (so they are not directly visible) and move them
+// forwards to their final position while the puzzle is being disassembled.
+
+#local StackMoveTStart = 0;
+#local StackMoveTEnd = 20;
+#local StackDelta = <-10, 0, 10>;
+#local Now0 = Now;
+#local Z0 = SourcePosZOffset(0);
+
+#for (I, 0, NumPartsL2 - 1)
+	#if (PartPosition[I].z >= Z0)
+		#declare PartPosition[I] = PartPosition[I] + StackDelta;
+		#declare Now = StackMoveTStart;
+		TimedMove(<I + 1, 0, 0>, -StackDelta, StackMoveTEnd - StackMoveTStart)
+	#end
+#end
+
+#declare Now = Now0;
+
+//--------------------------------------
 // Match shorthands with actual parts
 
 #declare P_I_I = MovingPart[P_I_I - 1] + 1;
@@ -167,14 +189,14 @@ Move(<P_I_H, 0, 0>, -x * 2)
 #declare CameraLookAt_End = CameraLookAt + z * 14 - y * 6;
 #declare CameraPosition_End = CameraPosition * 5.5 + z * 14;
 
-//#declare Now0 = Now;
-//#declare Now = 1;
-//MoveVector(CameraLookAt, CameraLookAt_End, Now0)
-//#declare Now = 1;
-//MoveVector(CameraPosition, CameraPosition_End, Now0)
+#declare Now0 = Now;
+#declare Now = 1;
+MoveVector(CameraLookAt, CameraLookAt_End, Now0)
+#declare Now = 1;
+MoveVector(CameraPosition, CameraPosition_End, Now0)
 
-#declare CameraLookAt = CameraLookAt_End;
-#declare CameraPosition = CameraPosition_End;
+//#declare CameraLookAt = CameraLookAt_End;
+//#declare CameraPosition = CameraPosition_End;
 
 #include "Scene.inc"
 
