@@ -10,17 +10,23 @@
 
 #local D2 = 9;
 
-#local BeatMaxAmp = 0.02;
+#local BeatAmpL1 = 0.02;
+#local BeatAmpL2 = 0.01;
 
-// Time when L2 beat multiplier starts phading out
+// Time when L1 beat multiplier starts phading out.
+// Also time when L2 beat multiplier starts phade in.
 #local BeatStartT = 187;
 
-// Time when L2 beat multiplier is fully phaded out
+// Time when L1 beat multiplier is fully phaded out.
+// Also time when L2 beat multiplier phade in finished.
 #local BeatEndT = 190;
 
 #declare f_beatmul = function(beat, a) { 1 - a * sin(2 * pi * beat) }
-#declare f_beatmul_l2 = function(time) {
-	f_beatmul(f_beat(time), BeatMaxAmp * (1 - f_ramp(BeatStartT, BeatEndT, time)))
+#declare f_beatmul_L1 = function(time) {
+	f_beatmul(f_beat(time), BeatAmpL1 * (1 - f_ramp(BeatStartT, BeatEndT, time)))
+}
+#declare f_beatmul_L2 = function(time) {
+	f_beatmul(f_beat(time), BeatAmpL2 * f_ramp(BeatStartT, BeatEndT, time))
 }
 
 //--------------------------------------
@@ -53,7 +59,7 @@ InitStartingPlacementL2(PartPosition, PartRotation)
 		#local PartL2Pos = PositionForPart(PartTypeL2, D2);
 		#local DestPosWithBeat = (
 			PartDstPosition[PartIndex] - PartL2Pos
-		) * f_beatmul_l2(DepTime + DeltaT) + PartL2Pos;
+		) * f_beatmul_L1(DepTime + DeltaT) + PartL2Pos;
 		#local DeltaV = DestPosWithBeat - PartPosition[PartIndex];
 
 		#declare Now = DepTime;
@@ -89,7 +95,9 @@ MoveVector(CameraPosition, CameraPosition_End, 50)
 //--------------------------------------
 // Place objects
 
-#local BeatMul = f_beatmul_l2(clock);
+#local BeatMul1 = f_beatmul_L1(clock);
+#local BeatMul2 = f_beatmul_L2(clock);
+
 #for (I, 0, NumPartsL2 - 1)
 	#local PartTypeL1 = mod(I, NumParts);
 	#local PartTypeL2 = div(I, NumParts);
@@ -103,7 +111,7 @@ MoveVector(CameraPosition, CameraPosition_End, 50)
 				#local PartL2Pos = PositionForPart(PartTypeL2, D2);
 				#declare PartPosition[I] = (
 					PartDstPosition[I] - PartL2Pos
-				) * BeatMul + PartL2Pos;
+				) * BeatMul1 + PartL2Pos * BeatMul2;
 			#end
 
 			translate PartPosition[I]
