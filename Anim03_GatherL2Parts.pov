@@ -126,9 +126,9 @@ InitStartingPlacementL2(PartPosition, PartRotation)
 
 #declare Now0 = Now;
 #declare Now = 0;
-MoveVector(CameraLookAt, CameraLookAt_End, 30)
+MoveVector(CameraLookAt, CameraLookAt_End, 15)
 #declare Now = 0;
-MoveVector(CameraPosition, CameraPosition_End, 50)
+MoveVector(CameraPosition, CameraPosition_End, 25)
 
 
 #include "Scene.inc"
