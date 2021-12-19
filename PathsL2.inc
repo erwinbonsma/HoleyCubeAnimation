@@ -91,7 +91,7 @@ InitAssemblyPlacementL2(PartDstPosition, PartDstRotation, 3, 9)
 		#for (I, 0, NumParts - 1)
 			#local PartIndex = PartType + I * NumParts;
 			#if (defined(DepartureTime[PartIndex]))
-				#if (DepartureTime[PartIndex] < Time)
+				#if (DepartureTime[PartIndex] <= Time)
 					#local NumDeparted = NumDeparted + 1;
 				#end
 			#end
@@ -263,7 +263,8 @@ InitAssemblyPlacementL2(PartDstPosition, PartDstRotation, 3, 9)
 		#end
 
 		#declare Now = Now + 1;
-		#if (Now > 250)
+		#if (Now - ArrivalTime[PathOrder[NumPathsTotal - 1]] > 20)
+			// Stop planning when it is apparently stuck
 			#break
 		#end
 	#end

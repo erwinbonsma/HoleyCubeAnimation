@@ -52,15 +52,41 @@ InitStartingPlacementL2(PartPosition, PartRotation)
 
 	#local DepTime = DepartureTime[PartIndex] - FirstDeparture;
 	#if (DepTime < clock)
+		// Base timing on original planned path
 		#local DeltaV = PartDstPosition[PartIndex] - PartPosition[PartIndex];
 		#local DeltaT = ClockTicksForMove(DeltaV);
 
+		// However, move the part first forward until it is aligned with top of the
+		// currently biggest stack. From there, move it to its destination position.
+		// This avoids that the part crosses through another stack.
+		#local StartZ = SourcePosZOffset(MinPartsDepartedAtTime(
+			DepartureTime[PartIndex] + 0.1
+		));
+		#local DeltaZ = PartPosition[PartIndex].z - StartZ;
+//		#debug concat(
+//			"I = ", str(I, 0, 0),
+//			", PartIndex = ", str(PartIndex, 0, 0),
+//			", PartType = ", str(PartType, 0, 0),
+//			", DepTime = ", str(DepTime, 0, 3),
+//			", StartZ = ", str(StartZ, 0, 0),
+//			", DeltaZ = ", str(DeltaZ, 0, 0),
+//			"\n"
+//		)
+
+		#if (DeltaZ > 0)
+			#local DeltaT0 = ClockTicksForMove(DeltaZ * z);
+			#declare Now = DepTime;
+			TimedMove(<PartIndex + 1, 0, 0>, DeltaZ * -z, DeltaT0)
+			#local DepTime = DepTime + DeltaT0;
+			#local DeltaT = DeltaT - DeltaT0;
+		#end
+
 		// Tweak destination position to match the beat
 		#local PartL2Pos = PositionForPart(PartTypeL2, D2);
-		#local DestPosWithBeat = (
+		#local DstPosWithBeat = (
 			PartDstPosition[PartIndex] - PartL2Pos
 		) * f_beatmul_L1(DepTime + DeltaT) + PartL2Pos;
-		#local DeltaV = DestPosWithBeat - PartPosition[PartIndex];
+		#local DeltaV = DstPosWithBeat - PartPosition[PartIndex];
 
 		#declare Now = DepTime;
 		TimedMove(<PartIndex + 1, 0, 0>, DeltaV, DeltaT)
