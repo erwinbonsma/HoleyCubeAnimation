@@ -6,7 +6,7 @@
 #include "PathsL2.inc"
 
 // Clock: 0..190
-// Frames: 0..4750
+// Frames: 0..4560
 
 #local D2 = 9;
 
@@ -44,6 +44,8 @@ InitStartingPlacementL2(PartPosition, PartRotation)
 #end
 #local FirstDeparture = floor(FirstDeparture);
 
+#declare MoveSpeed = GatherMoveSpeed;
+
 // Carry out the moves
 #for (I, 0, NumPartsL2 - 1)
 	#local PartIndex = PathOrder[I];
@@ -56,6 +58,17 @@ InitStartingPlacementL2(PartPosition, PartRotation)
 		#local DeltaV = PartDstPosition[PartIndex] - PartPosition[PartIndex];
 		#local DeltaT = ClockTicksForMove(DeltaV);
 
+		#if (false)
+			#debug concat(
+				"PartIndex = ", str(PartIndex, 0, 0),
+				", DepTime = ", str(DepTime, 0, 3),
+				", ArrTime = ", str(DepTime + DeltaT, 0, 3),
+				", Now = ", str(Now, 0, 3),
+				", DeltaT = ", str(DeltaT, 0, 3),
+				"\n"
+			)
+		#end
+
 		// However, move the part first forward until it is aligned with top of the
 		// currently biggest stack. From there, move it to its destination position.
 		// This avoids that the part crosses through another stack.
@@ -63,15 +76,17 @@ InitStartingPlacementL2(PartPosition, PartRotation)
 			DepartureTime[PartIndex] + 0.1
 		));
 		#local DeltaZ = PartPosition[PartIndex].z - StartZ;
-//		#debug concat(
-//			"I = ", str(I, 0, 0),
-//			", PartIndex = ", str(PartIndex, 0, 0),
-//			", PartType = ", str(PartType, 0, 0),
-//			", DepTime = ", str(DepTime, 0, 3),
-//			", StartZ = ", str(StartZ, 0, 0),
-//			", DeltaZ = ", str(DeltaZ, 0, 0),
-//			"\n"
-//		)
+		#if (false)
+			#debug concat(
+				"I = ", str(I, 0, 0),
+				", PartIndex = ", str(PartIndex, 0, 0),
+				", PartType = ", str(PartType, 0, 0),
+				", DepTime = ", str(DepTime, 0, 3),
+				", StartZ = ", str(StartZ, 0, 0),
+				", DeltaZ = ", str(DeltaZ, 0, 0),
+				"\n"
+			)
+		#end
 
 		#if (DeltaZ > 0)
 			#local DeltaT0 = ClockTicksForMove(DeltaZ * z);
