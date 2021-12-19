@@ -3,12 +3,15 @@
 #include "Moves.inc"
 #include "Anim.inc"
 
+// Clock: 0..30
+// Frames: 0..720
+
 // End clock ticks of previous animation, where beat started
 #declare BeatTimeOffset = 190;
 #include "Beat.inc"
 
-#local BeatT0 = 15;
-#local BeatT1 = 18;
+#local BeatT0 = 12 + 15;
+#local BeatT1 = 12 + 18;
 
 #declare f_beatmul_L2 = function(time) {
 	f_beatmul(f_beat(time), BeatAmpL2 * (1 - f_ramp(BeatT0, BeatT1, time)))
@@ -26,10 +29,9 @@ InitAssemblyPlacementL2(PartPosition, PartRotation, 3, 9)
 
 ResetPuzzleTransform()
 
-#local Now0 = Now;
-//RotatePuzzle(<0, 360, 0>, 100)
+RotatePuzzle(<0, 360, 0>, 12)
 
-#declare Now = Now0;
+#declare Now = Now + 2;
 
 //--------------------------------------
 // Assemble L2 parts
