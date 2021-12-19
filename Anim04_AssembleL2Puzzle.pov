@@ -1,3 +1,4 @@
+#include "Globals.inc"
 #include "PartsL2.inc"
 #include "Moves.inc"
 #include "Anim.inc"
