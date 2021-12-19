@@ -17,12 +17,13 @@
 	f_beatmul(f_beat(time), BeatAmpL2 * (1 - f_ramp(BeatT0, BeatT1, time)))
 }
 
+#local D1 = 3;
 #local D2 = 9;
 
 #declare PartPosition = array[NumPartsL2];
 #declare PartRotation = array[NumPartsL2];
 
-InitAssemblyPlacementL2(PartPosition, PartRotation, 3, 9)
+InitAssemblyPlacementL2(PartPosition, PartRotation, D1, D2)
 
 //--------------------------------------
 // Rotate puzzle
