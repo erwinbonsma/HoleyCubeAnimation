@@ -4,7 +4,7 @@
 #include "Anim.inc"
 
 // Clock: 0..75
-// Frames: 0..1875
+// Frames: 0..1800
 
 // Order parts by increasing weight
 #declare InitialPartPosition = array[NumParts];
