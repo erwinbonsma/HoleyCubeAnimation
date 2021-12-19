@@ -9,7 +9,19 @@
 // Frames: 0..4750
 
 #local D2 = 9;
-#declare BeatMultiplier = function(beat) { 1 - 0.01 * sin(2 * pi * beat) }
+
+#local BeatMaxAmp = 0.02;
+
+// Time when L2 beat multiplier starts phading out
+#local BeatStartT = 187;
+
+// Time when L2 beat multiplier is fully phaded out
+#local BeatEndT = 190;
+
+#declare f_beatmul = function(beat, a) { 1 - a * sin(2 * pi * beat) }
+#declare f_beatmul_l2 = function(time) {
+	f_beatmul(f_beat(time), BeatMaxAmp * (1 - f_ramp(BeatStartT, BeatEndT, time)))
+}
 
 //--------------------------------------
 // Move to fully exploded layout
@@ -41,7 +53,7 @@ InitStartingPlacementL2(PartPosition, PartRotation)
 		#local PartL2Pos = PositionForPart(PartTypeL2, D2);
 		#local DestPosWithBeat = (
 			PartDstPosition[PartIndex] - PartL2Pos
-		) * BeatMultiplier(BeatAt(DepTime + DeltaT)) + PartL2Pos;
+		) * f_beatmul_l2(DepTime + DeltaT) + PartL2Pos;
 		#local DeltaV = DestPosWithBeat - PartPosition[PartIndex];
 
 		#declare Now = DepTime;
@@ -77,7 +89,7 @@ MoveVector(CameraPosition, CameraPosition_End, 50)
 //--------------------------------------
 // Place objects
 
-#local BeatMul = BeatMultiplier(Beat);
+#local BeatMul = f_beatmul_l2(clock);
 #for (I, 0, NumPartsL2 - 1)
 	#local PartTypeL1 = mod(I, NumParts);
 	#local PartTypeL2 = div(I, NumParts);
