@@ -10,9 +10,6 @@
 
 #local D2 = 9;
 
-#local BeatAmpL1 = 0.02;
-#local BeatAmpL2 = 0.01;
-
 // Time when L1 beat multiplier starts phading out.
 // Also time when L2 beat multiplier starts phade in.
 #local BeatStartT = 187;
@@ -21,7 +18,6 @@
 // Also time when L2 beat multiplier phade in finished.
 #local BeatEndT = 190;
 
-#declare f_beatmul = function(beat, a) { 1 - a * sin(2 * pi * beat) }
 #declare f_beatmul_L1 = function(time) {
 	f_beatmul(f_beat(time), BeatAmpL1 * (1 - f_ramp(BeatStartT, BeatEndT, time)))
 }

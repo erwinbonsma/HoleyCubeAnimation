@@ -2,6 +2,19 @@
 #include "Moves.inc"
 #include "Anim.inc"
 
+// End clock ticks of previous animation, where beat started
+#declare BeatTimeOffset = 190;
+#include "Beat.inc"
+
+#local BeatT0 = 15;
+#local BeatT1 = 18;
+
+#declare f_beatmul_L2 = function(time) {
+	f_beatmul(f_beat(time), BeatAmpL2 * (1 - f_ramp(BeatT0, BeatT1, time)))
+}
+
+#local D2 = 9;
+
 #declare PartPosition = array[NumPartsL2];
 #declare PartRotation = array[NumPartsL2];
 
@@ -120,11 +133,17 @@ ResetPuzzleTransform()
 //--------------------------------------
 // Place objects
 
+#local BeatMul2 = f_beatmul_L2(clock);
+
 union {
 	#for (I, 0, NumPartsL2 - 1)
 		#local PartTypeL1 = mod(I, NumParts);
 		#local PartTypeL2 = div(I, NumParts);
-		#if (div(I, NumParts) < 12)
+
+		#local PartL2Pos = PositionForPart(PartTypeL2, D2);
+		#declare PartPosition[I] = PartPosition[I] + (BeatMul2 - 1) * PartL2Pos;
+
+		#if (true)
 		object {
 			Part_L2[I]
 			transform { PartRotation[I] }
