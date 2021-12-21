@@ -284,3 +284,23 @@
 		#end
 	#end
 #end
+
+//--------------------------------------
+// Define L2 compound parts
+
+#macro DefineCompoundParts_L2()
+	#declare CompoundPart_L2 = array[NumParts];
+
+	#for (I, 0, NumParts - 1)
+		#declare CompoundPart_L2[I] = union {
+			#for (J, 0, NumParts - 1)
+				#local PartIndex = I * NumParts + J;
+				object {
+					Part_L2[PartIndex]
+
+					TransformForL1PartInL2Part(I, J, 1)
+				}
+			#end
+		}
+	#end
+#end

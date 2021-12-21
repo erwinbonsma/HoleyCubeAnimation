@@ -9,26 +9,16 @@
 #local D2 = 9;
 
 //--------------------------------------
-// Define L2 compound parts
+// Initial placement of compound L2 parts
 
-#declare CompoundPart = array[NumParts];
+DefineCompoundParts_L2()
+
 #declare PartPosition = array[NumParts];
 #declare PartRotation = array[NumParts];
 
 #for (I, 0, NumParts - 1)
 	#declare PartPosition[I] = PositionForPart(I, D2);
 	#declare PartRotation[I] = RotationForL2Part(I);
-
-	#declare CompoundPart[I] = union {
-		#for (J, 0, NumParts - 1)
-			#local PartIndex = I * NumParts + J;
-			object {
-				Part_L2[PartIndex]
-
-				TransformForL1PartInL2Part(I, J, 1)
-			}
-		#end
-	}
 #end
 
 //--------------------------------------
@@ -77,7 +67,6 @@ SlowMove6(<P_X_X, P_IxH, P_HxX>, <P_I_X, P_IxI, P_HxH>, x * 2 * 3)
 // Animate camera (throughout animation)
 
 // Match Anim04 end position
-
 #declare CameraLookAt = <0, 0, 0>;
 #declare CameraPosition = <-83, 54, -75>;
 
@@ -93,7 +82,7 @@ MoveVector(CameraPosition, CameraPosition_End, 12)
 
 #for (I, 0, NumParts - 1)
 	object {
-		CompoundPart[I]
+		CompoundPart_L2[I]
 
 		transform { PartRotation[I] }
 		translate PartPosition[I]
