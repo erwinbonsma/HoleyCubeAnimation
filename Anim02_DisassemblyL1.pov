@@ -136,8 +136,8 @@ Move(<P_I_H, 0, 0>, -x * 2)
 #local Z0 = SourcePosZOffset(0);
 
 #for (I, 0, NumParts - 1)
-  // Move parts in parallel, with delay of 2 clock ticks
-	#declare Now = ClockStart + I * 2;
+	// Move parts in parallel, with a fixed delay
+	#declare Now = ClockStart + I * 3;
 
 	#declare PartIndex = MovingPart[RestoreOrder[I]];
 	#declare PartType = mod(PartIndex NumParts);
