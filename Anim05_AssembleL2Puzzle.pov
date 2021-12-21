@@ -1,6 +1,7 @@
 #include "Globals.inc"
 #include "PartsL2.inc"
 #include "Moves.inc"
+#include "Anim.inc"
 
 // Clock: 0..42
 // Frames: 0..1008
@@ -79,6 +80,11 @@ SlowMove6(<P_X_X, P_IxH, P_HxX>, <P_I_X, P_IxI, P_HxH>, x * 2 * 3)
 
 #declare CameraLookAt = <0, 0, 0>;
 #declare CameraPosition = <-83, 54, -75>;
+
+#declare CameraPosition_End = <-83, 54, -75> * 0.5;
+
+#declare Now = 30;
+MoveVector(CameraPosition, CameraPosition_End, 12)
 
 #include "Scene.inc"
 
