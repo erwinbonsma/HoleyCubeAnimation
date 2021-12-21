@@ -120,19 +120,6 @@ MoveVector(CameraLookAt, <0, 0, 0>, 4)
 #declare MoveSpeed = 1;
 
 // Assemble first half
-Move(<P_XxX, 0, 0>, -z * 2)
-#declare Now = Now - 2; 
-Move(<P_I_H, 0, 0>, x * 2)
-Move(<P_XxX, P_I_H, 0>, -y * 2)
-
-Move(<P_H_X, 0, 0>, -z * 2)
-#declare Now = Now - 2;
-Move6(<P_XxX, P_I_H, P_IxX>, <P_I_I, 0, 0>, z * 2)
-
-Move(<P_H_H, P_I_I, 0>, y * 2)
-Move(<P_I_I, 0, 0>, x * 2)
-
-// Assemble second half
 Move(<P_HxX, 0, 0>, z * 2)
 #declare Now = Now - 2;
 Move(<P_IxH, 0, 0>, -x * 2)
@@ -147,6 +134,19 @@ Move6(<P_HxX, P_IxH, P_IxI>, <P_HxH, P_I_X, 0>, -z * 2)
 Move(<P_X_X, 0, 0>, z * 2)
 
 Move(<P_HxH, P_I_X, 0>, y * 2)
+
+// Assemble second half
+Move(<P_XxX, 0, 0>, -z * 2)
+#declare Now = Now - 2;
+Move(<P_I_H, 0, 0>, x * 2)
+Move(<P_XxX, P_I_H, 0>, -y * 2)
+
+Move(<P_H_X, 0, 0>, -z * 2)
+#declare Now = Now - 2;
+Move6(<P_XxX, P_I_H, P_IxX>, <P_I_I, 0, 0>, z * 2)
+
+Move(<P_H_H, P_I_I, 0>, y * 2)
+Move(<P_I_I, 0, 0>, x * 2)
 
 // Assemble both halves
 #declare Now0 = Now;
