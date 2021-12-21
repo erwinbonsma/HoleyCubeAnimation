@@ -294,7 +294,7 @@
 
 #macro SlowMove(What, V)
 	#local PrevMoveSpeed = MoveSpeed;
-	#declare MoveSpeed = 0.5;
+	#declare MoveSpeed = 0.5 * MoveSpeed;
 	
 	Move(What, V)
 	
@@ -303,7 +303,7 @@
 
 #macro FastMove(What, V)
 	#local PrevMoveSpeed = MoveSpeed;
-	#declare MoveSpeed = 2;
+	#declare MoveSpeed = 2 * MoveSpeed;
 	
 	Move(What, V)
 	
@@ -316,7 +316,7 @@
 
 #macro SlowMove6(What1, What2, V)
 	#local PrevMoveSpeed = MoveSpeed;
-	#declare MoveSpeed = 0.5;
+	#declare MoveSpeed = 0.5 * MoveSpeed;
 
 	Move6(What1, What2, V)
 

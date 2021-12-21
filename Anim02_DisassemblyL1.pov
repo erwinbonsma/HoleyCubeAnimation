@@ -155,7 +155,7 @@ Move(<P_I_H, 0, 0>, -x * 2)
 	TimedMove(<PartIndex + 1, 0, 0>, DeltaV, DeltaT)
 	#local DeltaZ = RestorePosition[PartType].z - Z0;
 	#if (DeltaZ > 0)
-		Move(<PartIndex + 1, 0, 0>, z * DeltaZ)
+		SlowMove(<PartIndex + 1, 0, 0>, z * DeltaZ)
 	#end
 
 	#declare Now = Now0;
@@ -165,12 +165,13 @@ Move(<P_I_H, 0, 0>, -x * 2)
 	#local StackDepth = 0;
 	#while (StackDepth * 2 < DeltaZ)
 		// Make room for the part to be placed inside the stack
-		#declare Now = Now0 - 4;
 		#local PartIndex = PartsAtStack[PartType][StackDepth];
-		Move(<PartIndex + 1, 0, 0>, x * 2)
 
-		#declare Now = Now0 + 2;
-		Move(<PartIndex + 1, 0, 0>, -x * 2)
+		#declare PartPosition[PartIndex] = LerpVector(
+			PartPosition[PartIndex],
+			PartPosition[PartIndex] + x * 2,
+			0.5 - 0.5 * cos(2 * pi * f_ramp(Now0 - 3, Now0 + 3, clock))
+		);
 
 		#declare Now0 = Now0 + 2;
 		#local StackDepth = StackDepth + 1;
