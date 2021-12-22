@@ -4,8 +4,8 @@
 #include "Moves.inc"
 #include "Anim.inc"
 
-// Clock: 0..50
-// Frames: 0..1200
+// Clock: 0..54
+// Frames: 0..1296
 
 #declare PartPosition = array[NumPartsL2];
 #declare PartRotation = array[NumPartsL2];
@@ -128,7 +128,7 @@ Move(<P_I_H, 0, 0>, -x * 2)
 
 // The restore order (order index to part type)
 #declare RestoreOrder = array[NumParts] {
-	3, 5, 7, 2, 10, 11, 9, 8, 1, 4, 6, 0
+	3, 5, 7, 2, 10, 11, 9, 8, 0, 4, 1, 6
 };
 
 #declare ClockStart = Now;
