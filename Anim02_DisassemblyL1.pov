@@ -7,6 +7,8 @@
 // Clock: 0..54
 // Frames: 0..1296
 
+#local MaxClock = 54;
+
 #declare PartPosition = array[NumPartsL2];
 #declare PartRotation = array[NumPartsL2];
 
@@ -132,7 +134,6 @@ Move(<P_I_H, 0, 0>, -x * 2)
 };
 
 #declare ClockStart = Now;
-#declare MaxNow = Now;
 #local Z0 = SourcePosZOffset(0);
 
 #for (I, 0, NumParts - 1)
@@ -176,8 +177,6 @@ Move(<P_I_H, 0, 0>, -x * 2)
 		#declare Now0 = Now0 + 2;
 		#local StackDepth = StackDepth + 1;
 	#end
-
-	#declare MaxNow = max(Now, MaxNow);
 #end
 
 //--------------------------------------
@@ -190,11 +189,12 @@ Move(<P_I_H, 0, 0>, -x * 2)
 #declare CameraLookAt_End = CameraLookAt + z * 2 + y * 2;
 #declare CameraPosition_End = CameraPosition * 4 + z * 2;
 
-#declare Now0 = Now;
-#declare Now = 1;
-MoveVector(CameraLookAt, CameraLookAt_End, Now0)
-#declare Now = 1;
-MoveVector(CameraPosition, CameraPosition_End, Now0)
+// Construct amount from two parts so that:
+// - Camera initially moves quickly
+// - Camera moves throughout scene
+#local amount = 0.5 * (f_sramp(0, 20, clock) + f_sramp(0, MaxClock, clock));
+#declare CameraLookAt = LerpVector(CameraLookAt, CameraLookAt_End, amount);
+#declare CameraPosition = LerpVector(CameraPosition, CameraPosition_End, amount);
 
 //#declare CameraLookAt = CameraLookAt_End;
 //#declare CameraPosition = CameraPosition_End;
