@@ -4,8 +4,8 @@
 #include "Moves.inc"
 #include "Anim.inc"
 
-// Clock: 0..54
-// Frames: 0..1296
+// Clock: 0..56
+// Frames: 0..1344
 
 #local MaxClock = 54;
 
