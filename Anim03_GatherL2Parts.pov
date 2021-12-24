@@ -14,16 +14,18 @@
 // Coordinate to beat of sound track
 
 #local BeatLoStart = 14;
-#local BeatHiStart1 = 43;
-#local BeatHiEnd1 = 70;
-#local BeatHiStart2 = 130;
+#local BeatMeStart1 = 43;
+#local BeatMeEnd1 = 70;
+#local BeatMeStart2 = 128;
+#local BeatHiStart = 157;
 
 #local AmpD = 0.2;
 #declare f_beatamp = function(time) {
 	f_ramp(BeatLoStart - AmpD, BeatLoStart + AmpD, time)
-	+ f_ramp(BeatHiStart1 - AmpD, BeatHiStart1 + AmpD, time)
-	- f_ramp(BeatHiEnd1 - AmpD, BeatHiEnd1 + AmpD, time)
-	+ f_ramp(BeatHiStart2 - AmpD, BeatHiStart2 + AmpD, time)
+	+ f_ramp(BeatMeStart1 - AmpD, BeatMeStart1 + AmpD, time)
+	- f_ramp(BeatMeEnd1 - AmpD, BeatMeEnd1 + AmpD, time)
+	+ f_ramp(BeatMeStart2 - AmpD, BeatMeStart2 + AmpD, time)
+	+ f_ramp(BeatHiStart - AmpD, BeatHiStart + AmpD, time)
 }
 
 // Time when L1 beat multiplier starts phading out.
