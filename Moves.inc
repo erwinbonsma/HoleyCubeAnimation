@@ -194,9 +194,8 @@
 
 #macro _Rotate(What, VRotate, VCenter, Clock_MoveDone)
 	#if (Now < clock)
-		#declare RotateFraction = 1;
+		#declare RotateFraction = f_sramp(Now, Clock_MoveDone, clock);
 		#if (clock < Clock_MoveDone)
-			#declare RotateFraction = (clock - Now) / (Clock_MoveDone - Now);
 			#declare NumMovesHandledFraction = RotateFraction;
 		#end
 		FractionRotatePart(What.x, VRotate * RotateFraction, VCenter)
