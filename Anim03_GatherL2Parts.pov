@@ -110,7 +110,7 @@ InitStartingPlacementL2(PartPosition, PartRotation)
 			TimedMove(<PartIndex + 1, 0, 0>, DeltaZ * -z, DeltaT0)
 
 			// Start main movement before Z movement is fully finished
-			#local DeltaT0 = DeltaT0 - 0.3;
+			#local DeltaT0 = DeltaT0 - 0.2;
 
 			#local DepTime = DepTime + DeltaT0;
 			#local DeltaT = DeltaT - DeltaT0;
@@ -129,7 +129,10 @@ InitStartingPlacementL2(PartPosition, PartRotation)
 			#declare PartPositioned[PartIndex] = true;
 		#end
 
-		#declare Now = DepTime;
+		// Delay rotation a bit, and also let it finish before path is in final position
+		#local RotDelay = 1;
+		#declare Now = DepTime + RotDelay;
+		#declare DeltaT = DeltaT - 2 * RotDelay;
 		TimedRotateToTransform(<PartIndex + 1, 0, 0>, PartDstRotation[PartIndex], DeltaT)
 	#end
 #end
