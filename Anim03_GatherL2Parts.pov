@@ -10,19 +10,39 @@
 
 #local D2 = 9;
 
+//--------------------------------------
+// Coordinate to beat of sound track
+
+#local BeatLoStart = 14;
+#local BeatHiStart1 = 43;
+#local BeatHiEnd1 = 70;
+#local BeatHiStart2 = 130;
+
+#local AmpD = 0.2;
+#declare f_beatamp = function(time) {
+	f_ramp(BeatLoStart - AmpD, BeatLoStart + AmpD, time)
+	+ f_ramp(BeatHiStart1 - AmpD, BeatHiStart1 + AmpD, time)
+	- f_ramp(BeatHiEnd1 - AmpD, BeatHiEnd1 + AmpD, time)
+	+ f_ramp(BeatHiStart2 - AmpD, BeatHiStart2 + AmpD, time)
+}
+
 // Time when L1 beat multiplier starts phading out.
 // Also time when L2 beat multiplier starts phade in.
-#local BeatStartT = 187;
+#local BeatSwitchStart = 187;
 
 // Time when L1 beat multiplier is fully phaded out.
 // Also time when L2 beat multiplier phade in finished.
-#local BeatEndT = 190;
+#local BeatSwitchEnd = 190;
 
 #declare f_beatmul_L1 = function(time) {
-	f_beatmul(f_beat(time), BeatAmpL1 * (1 - f_ramp(BeatStartT, BeatEndT, time)))
+	f_beatmul(
+		f_beat(time),
+		BeatAmpL1 * f_beatamp(time) * (1 - f_ramp(BeatSwitchStart, BeatSwitchEnd, time)))
 }
 #declare f_beatmul_L2 = function(time) {
-	f_beatmul(f_beat(time), BeatAmpL2 * f_ramp(BeatStartT, BeatEndT, time))
+	f_beatmul(
+		f_beat(time),
+		BeatAmpL2 * f_beatamp(time) * f_ramp(BeatSwitchStart, BeatSwitchEnd, time))
 }
 
 //--------------------------------------
