@@ -108,6 +108,10 @@ InitStartingPlacementL2(PartPosition, PartRotation)
 			#local DeltaT0 = ClockTicksForMove(DeltaZ * z);
 			#declare Now = DepTime;
 			TimedMove(<PartIndex + 1, 0, 0>, DeltaZ * -z, DeltaT0)
+
+			// Start main movement before Z movement is fully finished
+			#local DeltaT0 = DeltaT0 - 0.3;
+
 			#local DepTime = DepTime + DeltaT0;
 			#local DeltaT = DeltaT - DeltaT0;
 		#end
