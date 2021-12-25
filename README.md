@@ -36,14 +36,17 @@ consists of the following levels:
 
 The animation consists of the following scenes:
 
-- Scene 1: Assembles the Level 1 puzzle. This is the original Twelve Straight/
-  Twisted puzzle.
+- Scene 1 [73s 0:00 - 1:13]: Assembles the Level 1 puzzle.
+  This is the original Twelve Straight/Twisted puzzle.
 
-- Scene 2: Disassembles the Level 1 puzzle. The parts are returned to a
-  bigger collection of parts, which together can be assembled into a Level 2
-  puzzle.
+- Scene 2 [56s 1:14 - 2:09]: Disassembles the Level 1 puzzle.
 
-- Scene 3: Moves the Level 2 parts from their stack to prepare for assembly.
+  The parts are returned to a bigger collection of parts, which together can be
+  assembled into a Level 2 puzzle.
+
+- Scene 3 [190s 2:10 - 5:19]: Moves the Level 2 parts from their stack to
+  prepare for assembly.
+
   Each part is moved so that a position and orientation that matches where it
   needs to be placed in the assembled puzzle.
 
@@ -52,9 +55,9 @@ The animation consists of the following scenes:
 
   Once a parts is at its destination location, it also starts moving to the beat.
 
-- Scene 4: Constructs the Level 2 parts.
+- Scene 4 [30s 5:20 - 5:49]: Constructs the Level 2 parts.
 
-- Scene 5: Assembles the Level 2 puzzle from the Level 2 puzzle parts.
+- Scene 5 [42s 5:49 - 6:31]: Assembles the Level 2 puzzle.
 
-- Scene 6: Zooms out to show move Level 2 puzzles, positioned to form a Level 3
-  puzzle.
+- Scene 6 [TBD]: Zooms out to show more Level 2 puzzles, positioned to form a
+  Level 3 puzzle.
