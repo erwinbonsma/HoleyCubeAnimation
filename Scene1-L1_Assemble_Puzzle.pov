@@ -1,3 +1,10 @@
+/* Holey Puzzle POV-Ray Animation
+ *
+ * Scene 1: Assemble Level 1 puzzle
+ *
+ * Copyright (C) 2021  Erwin Bonsma
+ */
+ 
 #include "Globals.inc"
 #include "Parts.inc"
 #include "Moves.inc"
