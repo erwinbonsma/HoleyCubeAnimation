@@ -77,10 +77,11 @@ SlowMove6(<P_X_X, P_IxH, P_HxX>, <P_I_X, P_IxI, P_HxH>, x * 2 * 3)
 #declare CameraLookAt = <0, 0, 0>;
 #declare CameraPosition = <-83, 54, -75>;
 
-#declare CameraPosition_End = <-83, 54, -75> * 0.5;
-
-#declare Now = 30;
-MoveVector(CameraPosition, CameraPosition_End, 12)
+#local CameraT0 = 30;
+#local CameraT1 = 42;
+#declare CameraPosition = LerpVector(
+	CameraPosition, CameraPosition * 0.5, f_ramp(CameraT0, CameraT1, clock)
+);
 
 #include "Scene.inc"
 
