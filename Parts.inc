@@ -1,3 +1,10 @@
+/* Holey Puzzle POV-Ray Animation
+ *
+ * Include file that defines the Level 1 puzzle parts
+ *
+ * Copyright (C) 2021  Erwin Bonsma
+ */
+
 #ifndef (PARTS_INCLUDED)
 #declare PARTS_INCLUDED = 1;
 

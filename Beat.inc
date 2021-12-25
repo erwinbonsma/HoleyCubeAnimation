@@ -1,3 +1,10 @@
+/* Holey Puzzle POV-Ray Animation
+ *
+ * Include file to support movement of parts to the beat of the music
+ *
+ * Copyright (C) 2021  Erwin Bonsma
+ */
+
 #ifndef (BeatTimeOffset)
 	#declare BeatTimeOffset = 0;
 #end

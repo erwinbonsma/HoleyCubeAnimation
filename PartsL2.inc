@@ -1,10 +1,17 @@
+/* Holey Puzzle POV-Ray Animation
+ *
+ * Include file that defines the Level 2 puzzle parts
+ *
+ * Copyright (C) 2021  Erwin Bonsma
+ */
+
 #include "Parts.inc"
 
 #declare NumPartsL2 = NumParts * NumParts;
 #declare TotalParts = NumPartsL2;
 
 // Rotation for L2 parts so that:
-// - in (nearly) all sides of the L2 cube, all four center cubes are oriented 
+// - in (nearly) all sides of the L2 cube, all four center cubes are oriented
 //   differently
 // - each part-type has a big connector to it attached four times
 #declare PartRotation_L2 = array[12];

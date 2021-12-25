@@ -1,6 +1,13 @@
+/* Holey Puzzle POV-Ray Animation
+ *
+ * Include file with elements common to all scenes
+ *
+ * Copyright (C) 2021  Erwin Bonsma
+ */
+
 #include "colors.inc"
 
-#local AreaLights = 0;
+#local AreaLights = 1;
 
 #ifndef (CameraLookAt)
 	#declare CameraLookAt = <0, 0, 0>;

@@ -1,8 +1,9 @@
 //  Persistence of Vision Ray Tracer version 3.5 Include File
 //  File: quaternions.inc
 //  Description: Quaternion macros (primarily used for rotations)
-//  Last updated: 2003.10.5
+//  Last updated: 2021.12.25
 //  Created by: Alain Ducharme
+//  Modified by: Erwin Bonsma
 //
 //  Notes:
 //    - All angles are in Radians

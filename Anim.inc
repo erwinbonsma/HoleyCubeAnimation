@@ -1,3 +1,10 @@
+/* Holey Puzzle POV-Ray Animation
+ *
+ * Include file with generic animation utilities
+ *
+ * Copyright (C) 2021  Erwin Bonsma
+ */
+
 #ifndef (ANIM_INCLUDED)
 #declare ANIM_INCLUDED = 1;
 

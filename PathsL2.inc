@@ -1,3 +1,10 @@
+/* Holey Puzzle POV-Ray Animation
+ *
+ * Include file that plans the part movements of Scene 3
+ *
+ * Copyright (C) 2021  Erwin Bonsma
+ */
+
 #include "PathCrossing.inc"
 
 //--------------------------------------
@@ -335,7 +342,7 @@ InitAssemblyPlacementL2(PartDstPosition, PartDstRotation, 3, 9)
 	#for (I, 0, NumParts - 1)
 		#for (J, 0, NumParts - 1)
 			#local PartIndex = PartsAtStack[I][J];
-	
+
 			#declare PartPosition[PartIndex] = <
 				PartPosition[PartIndex].x,
 				PartPosition[PartIndex].y,

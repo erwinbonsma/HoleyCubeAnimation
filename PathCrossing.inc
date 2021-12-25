@@ -1,3 +1,10 @@
+/* Holey Puzzle POV-Ray Animation
+ *
+ * Include file for path collision detection
+ *
+ * Copyright (C) 2021  Erwin Bonsma
+ */
+
 #include "Anim.inc"
 
 #declare Eps = 0.00001;

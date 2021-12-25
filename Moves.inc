@@ -1,3 +1,8 @@
+/* Generic include file for creating puzzle animations
+ *
+ * Copyright (C) 2021  Erwin Bonsma
+ */
+
 //----------------------------------------------------------------------------
 // Animation
 
@@ -154,7 +159,7 @@
 #end
 
 #macro _Move(What, V, Clock_MoveDone)
-	#if (Now < clock)	
+	#if (Now < clock)
 		#declare MoveFraction = 1;
 		#if (clock < Clock_MoveDone)
 			#local Min = Now;
@@ -176,7 +181,7 @@
 			// Steady move at max velocity
 			#local T = max(0, min(Time - 2 * AccelTime, RelTime - AccelTime));
 			#local Delta = Delta + MaxVelocity * T;
-			
+
 			// Deceleration
 			#local T = max(0, RelTime + AccelTime - Time);
 			#local Delta = Delta + MaxVelocity * T - 0.5 * Accel * T * T;
@@ -188,7 +193,7 @@
 		FractionMovePart(What.y, V * MoveFraction)
 		FractionMovePart(What.z, V * MoveFraction)
 	#end // if
-		
+
 	#declare Now = Clock_MoveDone;
 #end
 
@@ -229,7 +234,7 @@
 #macro EndMovePause()
 	#if (PauseEnabled)
 		#declare DelayedPause = DelayedPause + PauseDuration;
-		#if (! DelayPause) 
+		#if (! DelayPause)
 			#declare Now = Now + DelayedPause;
 			#declare DelayedPause = 0;
 		#end
@@ -251,7 +256,7 @@
 //		#debug concat("Now = ", str(Now, 0, 3), "\n")
 		#declare NumMovesHandled = NumMovesHandled + 1;
 	#end
-	
+
 	// Optional pause
 	EndMovePause()
 #end
@@ -260,11 +265,11 @@
 	(vlength(V) / MoveSpeed)
 #end
 
-// This move should blend into the next. I.e. no pause at the end of this move, 
+// This move should blend into the next. I.e. no pause at the end of this move,
 // but an extra pause at the end of the next one.
 #macro PartialMove(What, V)
   #declare DelayPause = 1;
-  Move(What, V) 
+  Move(What, V)
   #declare DelayPause = 0;
 #end
 
@@ -272,7 +277,7 @@
 	#local Clock_MoveDone = Now + TotalDuration - PauseDuration;
 
 	_Move(What, V, Clock_MoveDone)
-	
+
 	EndMove()
 #end
 
@@ -294,18 +299,18 @@
 #macro SlowMove(What, V)
 	#local PrevMoveSpeed = MoveSpeed;
 	#declare MoveSpeed = 0.5 * MoveSpeed;
-	
+
 	Move(What, V)
-	
+
 	#declare MoveSpeed = PrevMoveSpeed;
 #end
 
 #macro FastMove(What, V)
 	#local PrevMoveSpeed = MoveSpeed;
 	#declare MoveSpeed = 2 * MoveSpeed;
-	
+
 	Move(What, V)
-	
+
 	#declare MoveSpeed = PrevMoveSpeed;
 #end
 
@@ -390,7 +395,7 @@
 //------------------
 // Puzzle transformations
 
-#macro ResetPuzzleTransform() 
+#macro ResetPuzzleTransform()
 	#declare _PuzzleTransform = transform { translate 0 }
 #end
 
@@ -400,7 +405,7 @@ ResetPuzzleTransform()
 	#if (Now < clock)
 		#local RotateFraction = ClockFraction(Now, Now+Duration);
 
-		#declare _PuzzleTransform = 
+		#declare _PuzzleTransform =
 			transform {
 				transform { _PuzzleTransform }
 				rotate RotateFraction * V_Rotate
