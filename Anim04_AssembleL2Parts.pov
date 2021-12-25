@@ -10,11 +10,21 @@
 #declare BeatTimeOffset = 190;
 #include "Beat.inc"
 
-#local BeatT0 = 12 + 15;
-#local BeatT1 = 12 + 18;
+// Switch from hi to medium beat when part assembly starts
+#local BeatT0 = 14;
+
+// Ramp down from hi-beat movement to no movement. Ramp down starts in sync
+// with music. Ramp down ends when parts need to be assembled into a puzzle.
+#local BeatT1 = 24;
+#local BeatT2 = 30;
+
+#local f_beatamp = function(time) {
+	1 - f_ramp(BeatT0 - 0.5, BeatT0 + 0.5, time)
+	+ 2 * (1 - f_ramp(BeatT1, BeatT2, time))
+}
 
 #declare f_beatmul_L2 = function(time) {
-	f_beatmul(f_beat(time), BeatAmpL2 * (1 - f_ramp(BeatT0, BeatT1, time)))
+	f_beatmul(f_beat(time), BeatAmpL2 * f_beatamp(time))
 }
 
 #local D1 = 3;
