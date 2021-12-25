@@ -149,19 +149,19 @@ InitStartingPlacementL2(PartPosition, PartRotation)
 //--------------------------------------
 // Animate camera (throughout animation)
 
-// Match Anim02 end position
+// Match Scene 2 camera end position
 #declare CameraLookAt = <0, 2, 2>;
 #declare CameraPosition = <-55.2, 36, -58>;
 
-#declare CameraLookAt_End = <0, 0, 0>;
-#declare CameraPosition_End = <-83, 54, -75>;
-
-#declare Now0 = Now;
-#declare Now = 0;
-MoveVector(CameraLookAt, CameraLookAt_End, 15)
-#declare Now = 0;
-MoveVector(CameraPosition, CameraPosition_End, 25)
-
+#local CameraT0 = 0;
+#local CameraT1 = 15;
+#local CameraT2 = 25;
+#declare CameraLookAt = LerpVector(
+	CameraLookAt, <0, 0, 0>, f_ramp(CameraT0, CameraT1, clock)
+);
+#declare CameraPosition = LerpVector(
+	CameraPosition, <-83, 54, -75>, f_ramp(CameraT0, CameraT2, clock)
+);
 
 #include "Scene.inc"
 
