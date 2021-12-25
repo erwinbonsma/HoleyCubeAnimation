@@ -21,17 +21,4 @@
 	(V0 * (1 - Fraction) + V1 * Fraction)
 #end
 
-#macro MoveVector(V, VTarget, Duration)
-	#if (Now < clock)
-		#if (Now + Duration < clock)
-			#declare V = VTarget;
-		#else
-			#local Fraction = f_ramp(Now, Now + Duration, clock);
-			#declare V = V * (1 - Fraction) + VTarget * Fraction;
-		#end
-	#end
-
-	#declare Now = Now + Duration;
-#end
-
 #end // #ifndef (ANIM_INCLUDED)
