@@ -74,24 +74,32 @@
 //--------------------------------------
 // Move camera
 
+// Camera initially shows nothing
 #declare CameraPosition = <0, 12, -30>;
 #declare CameraLookAt = <-18, 0, 9>;
 
-MoveVector(CameraLookAt, <0, 0, 10>, 4)
+// Let camera show part stacks
+#local CameraT0 = 4;
+#declare CameraLookAt = LerpVector(
+	CameraLookAt, <0, 0, 10>, f_sramp(0, CameraT0, clock)
+);
 
-#declare Now0 = Now;
-MoveVector(CameraLookAt, <0, 0, 4>, 7)
-#declare Now = Now0;
-MoveVector(CameraPosition, <-23, 15, -25> * 1.2, 7)
-#declare Now = ceil(Now0);
+// Then slowly change camera so that exploded parts are shown
+#local CameraT1 = 11;
+#declare CameraLookAt = LerpVector(
+	CameraLookAt, <0, 0, 4>, f_sramp(CameraT0, CameraT1, clock)
+);
+#declare CameraPosition = LerpVector(
+	CameraPosition, <-27.6, 18, -30>, f_sramp(CameraT0, CameraT1, clock)
+);
 
 //--------------------------------------
 // Move to exploded pre-assembly
 
 #declare MoveSpeed = 2;
 
-#declare ClockStart = Now;
-#declare MaxNow = Now;
+#declare ClockStart = CameraT0;
+#declare MaxNow = ClockStart;
 
 #for (I, 0, NumParts - 1)
   // Move parts in parallel, with delay of two clock ticks
@@ -109,10 +117,15 @@ MoveVector(CameraPosition, <-23, 15, -25> * 1.2, 7)
 	#declare MaxNow = max(Now, MaxNow);
 #end
 
-#declare Now = ceil(MaxNow - 3);
-MoveVector(CameraLookAt, <0, 0, 0>, 4)
+// When parts are nearly in place, move camera to center the puzzle
+#local CameraT2 = ceil(MaxNow) - 3;
+#local CameraT3 = CameraT2 + 4;
+#declare CameraLookAt = LerpVector(
+	CameraLookAt, <0, 0, 0>, f_sramp(CameraT2, CameraT3, clock)
+);
 
-#declare Now = Now + 2;
+// Wait for a bit before starting assembly
+#declare Now = ceil(MaxNow) + 3;
 
 //--------------------------------------
 // Assemble both puzzle halves
@@ -153,9 +166,13 @@ Move(<P_I_I, 0, 0>, x * 2)
 SlowMove6(<P_XxX, P_I_H, P_H_X>, <P_IxX, P_I_I, P_H_H>, -x * 2)
 #declare Now = Now0;
 SlowMove6(<P_X_X, P_IxH, P_HxX>, <P_I_X, P_IxI, P_HxH>, x * 2)
-#declare D = Now - Now0;
-#declare Now = Now0;
-MoveVector(CameraPosition, CameraPosition * 0.5, D)
+
+// Zoom into puzzle
+#local CameraT4 = Now0;
+#local CameraT5 = Now;
+#declare CameraPosition = LerpVector(
+	CameraPosition, CameraPosition * 0.5, f_sramp(CameraT4, CameraT5, clock)
+);
 
 // Rotate assembled puzzle
 
