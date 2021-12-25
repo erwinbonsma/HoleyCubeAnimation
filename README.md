@@ -36,15 +36,19 @@ consists of the following levels:
 
 The animation consists of the following scenes:
 
-- Scene 1 [73s 0:00 - 1:13]: Assembles the Level 1 puzzle.
+- Scene 1, 73s (0:00 - 1:13): Assembles the Level 1 puzzle.
   This is the original Twelve Straight/Twisted puzzle.
 
-- Scene 2 [56s 1:14 - 2:09]: Disassembles the Level 1 puzzle.
+![Scene 1 - Assemble Level 1 puzzle](Previews/Scene1-L1_Assemble_Puzzle.png)
+
+- Scene 2, 56s (1:14 - 2:09): Disassembles the Level 1 puzzle.
 
   The parts are returned to a bigger collection of parts, which together can be
   assembled into a Level 2 puzzle.
 
-- Scene 3 [190s 2:10 - 5:19]: Moves the Level 2 parts from their stack to
+![Scene 2 - Disassemble Level 1 puzzle](Previews/Scene2-L1_Disassemble_Puzzle.png)
+
+- Scene 3, 190s (2:10 - 5:19): Moves the Level 2 parts from their stacks to
   prepare for assembly.
 
   Each part is moved so that a position and orientation that matches where it
@@ -53,11 +57,17 @@ The animation consists of the following scenes:
   A greedy scheduling algorithm is used with collision detection to maximise the
   number of parts that moves at any time without any parts colliding.
 
-  Once a parts is at its destination location, it also starts moving to the beat.
+  Once a part is at its destination location, it also starts moving to the beat.
 
-- Scene 4 [30s 5:20 - 5:49]: Constructs the Level 2 parts.
+![Scene 3 - Prepare Level 2 assembly](Previews/Scene3-L2_Prepare.png)
 
-- Scene 5 [42s 5:49 - 6:31]: Assembles the Level 2 puzzle.
+- Scene 4, 30s (5:20 - 5:49): Constructs the Level 2 parts.
+
+![Scene 4 - Assemble Level 2 puzzle parts](Previews/Scene4-L2_Assemble_Parts.png)
+
+- Scene 5, 42s (5:49 - 6:31): Assembles the Level 2 puzzle.
+
+![Scene 5 - Assemble Level 2 puzzle](Previews/Scene5-L2_Assemble_Puzzle.png)
 
 - Scene 6 [TBD]: Zooms out to show more Level 2 puzzles, positioned to form a
   Level 3 puzzle.
