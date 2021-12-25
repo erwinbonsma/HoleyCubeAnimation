@@ -38,11 +38,12 @@ InitAssemblyPlacementL2(PartPosition, PartRotation, D1, D2)
 //--------------------------------------
 // Rotate puzzle
 
-ResetPuzzleTransform()
+#declare RotT = 14;
+#declare PuzzleTransform = transform {
+	rotate LerpVector(<0, 0, 0>, <0, 360, 0>, f_sramp(0, RotT, clock))
+}
 
-RotatePuzzle(<0, 360, 0>, 12)
-
-#declare Now = Now + 2;
+#declare Now = RotT;
 
 //--------------------------------------
 // Assemble L2 parts
@@ -165,5 +166,5 @@ union {
 		}
 		#end
 	#end
-	transform { _PuzzleTransform }
+	transform { PuzzleTransform }
 }
