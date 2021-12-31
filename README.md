@@ -71,5 +71,7 @@ The animation consists of the following scenes:
 
 - Scene 6, 30s (6:12 - 6:41): Show off the assembled Level 2 puzzle.
 
-- Scene 7 [TBD]: Zooms out to show more Level 2 puzzles, positioned to form a
+- Scene 7, 30s (6:42 - 7:11): Zooms out to show more Level 2 puzzles, positioned to form a
   Level 3 puzzle.
+
+![Scene 7 - Reveal Level 3](Previews/Scene7-L3_Reveal.png)
