@@ -10,8 +10,8 @@
 #include "Moves.inc"
 #include "Anim.inc"
 
-// Clock: 0..??
-// Frames: 0..???
+// Clock: 0..30
+// Frames: 0..720
 
 #local D2 = 3;
 #local D3 = 21;
@@ -38,20 +38,17 @@ DefineCompoundParts_L2()
 //--------------------------------------
 // Animate camera (throughout animation)
 
-// Match Scene 5 camera end position
+// Match Scene 6 camera end position
 #declare CameraLookAt = <0, 0, 0>;
-#declare CameraPosition = <-230, 50, 100> * 0.2;
+#declare CameraPosition = <-51, 11, 22>;
 
 #local CameraT0 = 0;
 #local CameraT1 = 30;
 #declare CameraLookAt = LerpVector(
 	CameraLookAt, <-D3, 0, -D3>, f_ramp(CameraT0, CameraT1, clock)
 );
-//#declare CameraPosition = LerpVector(
-//	CameraPosition, <-83 * 1.2, 54 * 0.3, -75 / 1.2> * 2.2, f_ramp(CameraT0, CameraT1, clock)
-//);
 #declare CameraPosition = LerpVector(
-	CameraPosition, <-230, 50, 100> * 0.8, f_ramp(CameraT0, CameraT1, clock)
+	CameraPosition, <-185, 40, 80>, f_ramp(CameraT0, CameraT1, clock)
 );
 
 #include "Scene.inc"

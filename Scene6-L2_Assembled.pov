@@ -39,6 +39,7 @@
 // Create L2 puzzle
 
 #local D2 = 3;
+#local D3 = 21;
 
 DefineCompoundParts_L2()
 
@@ -75,6 +76,12 @@ DefineCompoundParts_L2()
 #declare CameraLookAt = <0, 0, 0>;
 #declare CameraPosition = <-83, 54, -75> * 0.45;
 
+#local CameraT0 = 5;
+#local CameraT1 = 25;
+#declare CameraPosition = LerpVector(
+	CameraPosition, <-51, 11, 22>, f_ramp(CameraT0, CameraT1, clock)
+);
+
 #include "Scene.inc"
 
 //--------------------------------------
@@ -83,4 +90,12 @@ DefineCompoundParts_L2()
 object {
 	CompoundPuzzle_L2
 	transform { PuzzleTransform }
+}
+
+box {
+	<-1, -1, -1>,
+	<1, 1, 1>
+
+	scale 4.5
+	translate y * D3 * (4 - 3 * f_sramp(0, 30, clock))
 }
