@@ -7,7 +7,7 @@
 
 #include "Globals.inc"
 #include "PartsL2.inc"
-#include "Moves.inc"
+#include "PartsL3.inc"
 #include "Anim.inc"
 
 // Clock: 0..30
@@ -100,10 +100,26 @@ object {
 	transform { PuzzleTransform }
 }
 
-box {
-	<-1, -1, -1>,
-	<1, 1, 1>
+union {
+	box {
+		<-1, -1, -1>,
+		<1, 1, 1>
 
-	scale 4.5
+		scale 4.5
+	}
+	object {
+		Connector_L3
+		translate <-3, 0, -6>
+	}
+	object {
+		Connector_L3
+		translate <3, 0, -6>
+	}
+	object {
+		Connector_L3
+		translate <0, -6, -3>
+	}
+	pigment { color White }
+
 	translate y * D3 * (4 - 3 * f_sramp(0, 30, clock))
 }

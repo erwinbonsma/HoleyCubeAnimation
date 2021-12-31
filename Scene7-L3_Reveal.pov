@@ -7,6 +7,7 @@
 
 #include "Globals.inc"
 #include "PartsL2.inc"
+#include "PartsL3.inc"
 #include "Moves.inc"
 #include "Anim.inc"
 
@@ -33,12 +34,6 @@ DefineCompoundParts_L2()
 
 	// Let orientation of zoomed in part match that from previous scene
 	rotate <90, 90, 0>
-}
-
-#declare Connector_L3 = union {
-	box { <-1.5, -0.5, -0.5>, <1.5, 0.5, 0.5> }
-	box { <-0.5, -1.5, -0.5>, <0.5, 1.5, 0.5> }
-	box { <-0.5, -0.5, -1.5>, <0.5, 0.5, 1.5> }
 }
 
 //--------------------------------------
