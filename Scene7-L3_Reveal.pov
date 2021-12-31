@@ -35,6 +35,12 @@ DefineCompoundParts_L2()
 	rotate <90, 90, 0>
 }
 
+#declare Connector_L3 = union {
+	box { <-1.5, -0.5, -0.5>, <1.5, 0.5, 0.5> }
+	box { <-0.5, -1.5, -0.5>, <0.5, 1.5, 0.5> }
+	box { <-0.5, -0.5, -1.5>, <0.5, 0.5, 1.5> }
+}
+
 //--------------------------------------
 // Animate camera (throughout animation)
 
@@ -45,10 +51,10 @@ DefineCompoundParts_L2()
 #local CameraT0 = 0;
 #local CameraT1 = 30;
 #declare CameraLookAt = LerpVector(
-	CameraLookAt, <-D3, 0, -D3>, f_ramp(CameraT0, CameraT1, clock)
+	CameraLookAt, <-D3, 0, -D3>, f_sramp(CameraT0, CameraT1, clock)
 );
 #declare CameraPosition = LerpVector(
-	CameraPosition, <-185, 40, 80>, f_ramp(CameraT0, CameraT1, clock)
+	CameraPosition, <-185, 40, 80>, f_sramp(CameraT0, CameraT1, clock)
 );
 
 #include "Scene.inc"
@@ -56,28 +62,37 @@ DefineCompoundParts_L2()
 //--------------------------------------
 // Place objects
 
-#for (I, 0, NumParts - 1)
-	object {
-		CompoundPuzzle_L2
+#for (N, 0, NumParts - 1)
+	union {
+		object { CompoundPuzzle_L2 }
 
-		transform { RotationForPart(I) }
-		translate PositionForPart(I, D3)
+		#for (I, 0, 1)
+			union {
+				object {
+					Connector[mod(PartConnector[N][I], 3)]
+					scale 9
+				}
+
+				union {
+					object {
+						Connector_L3
+						translate <6 * (1 - 2 * I), 0, 3>
+					}
+					object {
+						Connector_L3
+						translate <6 * (1 - 2 * I), 0, -3>
+					}
+				}
+
+				rotate x * 90 * div(PartConnector[N][I], 3)
+				translate x * (-1 + 2 * I) * D3
+			}
+		#end
+		pigment { color rgb PartColor[N] }
+
+		transform { RotationForPart(N) }
+		translate PositionForPart(N, D3)
 		translate <-D3, 0, -D3>
 	}
 #end
 
-#for (X, 0, 1)
-	#for (Y, 0, 1)
-		#for (Z, 0, 1)
-			box {
-				<-1, -1, -1>, <1, 1, 1>
-				scale 4.5
-
-				translate <1 - 2*X, 1 - 2*Y, 1 - 2*Z> * D3
-				translate <-D3, 0, -D3>
-
-				pigment { color White }
-			}
-		#end
-	#end
-#end
