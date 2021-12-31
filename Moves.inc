@@ -327,6 +327,15 @@
 	#declare MoveSpeed = PrevMoveSpeed;
 #end
 
+#macro FastMove6(What1, What2, V)
+	#local PrevMoveSpeed = MoveSpeed;
+	#declare MoveSpeed = 2 * MoveSpeed;
+
+	Move6(What1, What2, V)
+
+	#declare MoveSpeed = PrevMoveSpeed;
+#end
+
 #macro Move9(What1, What2, What3, V)
 	#local StartMove = Now;
 	#local Clock_MoveDone = Now + ClockTicksForMove(V) - PauseDuration;
