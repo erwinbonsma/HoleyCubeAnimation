@@ -1,6 +1,6 @@
 /* Holey Puzzle POV-Ray Animation
  *
- * Scene 6: Reveal Level 3
+ * Scene 7: Reveal Level 3
  *
  * Copyright (C) 2021  Erwin Bonsma
  */
