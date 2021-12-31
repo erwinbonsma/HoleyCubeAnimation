@@ -48,7 +48,7 @@ The animation consists of the following scenes:
 
 ![Scene 2 - Disassemble Level 1 puzzle](Previews/Scene2-L1_Disassemble_Puzzle.png)
 
-- Scene 3, 190s (2:10 - 5:19): Moves the Level 2 parts from their stacks to
+- Scene 3, 180s (2:10 - 5:09): Moves the Level 2 parts from their stacks to
   prepare for assembly.
 
   Each part is moved so that a position and orientation that matches where it
@@ -61,13 +61,15 @@ The animation consists of the following scenes:
 
 ![Scene 3 - Prepare Level 2 assembly](Previews/Scene3-L2_Prepare.png)
 
-- Scene 4, 30s (5:20 - 5:49): Constructs the Level 2 parts.
+- Scene 4, 35s (5:10 - 5:44): Constructs the Level 2 parts.
 
 ![Scene 4 - Assemble Level 2 puzzle parts](Previews/Scene4-L2_Assemble_Parts.png)
 
-- Scene 5, 42s (5:49 - 6:31): Assembles the Level 2 puzzle.
+- Scene 5, 27s (5:45 - 6:11): Assembles the Level 2 puzzle.
 
 ![Scene 5 - Assemble Level 2 puzzle](Previews/Scene5-L2_Assemble_Puzzle.png)
 
-- Scene 6 [TBD]: Zooms out to show more Level 2 puzzles, positioned to form a
+- Scene 6, 30s (6:12 - 6:41): Show off the assembled Level 2 puzzle.
+
+- Scene 7 [TBD]: Zooms out to show more Level 2 puzzles, positioned to form a
   Level 3 puzzle.
