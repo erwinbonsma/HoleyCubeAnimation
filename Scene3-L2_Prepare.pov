@@ -12,8 +12,8 @@
 #include "Beat.inc"
 #include "PathsL2.inc"
 
-// Clock: 0..190
-// Frames: 0..4560
+// Clock: 0..180
+// Frames: 0..4320
 
 #local D2 = 9;
 
@@ -35,23 +35,8 @@
 	+ f_ramp(BeatHiStart - AmpD, BeatHiStart + AmpD, time)
 }
 
-// Time when L1 beat multiplier starts phading out.
-// Also time when L2 beat multiplier starts phade in.
-#local BeatSwitchStart = 187;
-
-// Time when L1 beat multiplier is fully phaded out.
-// Also time when L2 beat multiplier phade in finished.
-#local BeatSwitchEnd = 190;
-
 #declare f_beatmul_L1 = function(time) {
-	f_beatmul(
-		f_beat(time),
-		BeatAmpL1 * f_beatamp(time) * (1 - f_ramp(BeatSwitchStart, BeatSwitchEnd, time)))
-}
-#declare f_beatmul_L2 = function(time) {
-	f_beatmul(
-		f_beat(time),
-		BeatAmpL2 * f_beatamp(time) * f_ramp(BeatSwitchStart, BeatSwitchEnd, time))
+	f_beatmul(f_beat(time), BeatAmpL1 * f_beatamp(time))
 }
 
 //--------------------------------------
@@ -169,7 +154,6 @@ InitStartingPlacementL2(PartPosition, PartRotation)
 // Place objects
 
 #local BeatMul1 = f_beatmul_L1(clock);
-#local BeatMul2 = f_beatmul_L2(clock);
 
 #for (I, 0, NumPartsL2 - 1)
 	#local PartTypeL1 = mod(I, NumParts);
@@ -184,7 +168,7 @@ InitStartingPlacementL2(PartPosition, PartRotation)
 				#local PartL2Pos = PositionForPart(PartTypeL2, D2);
 				#declare PartPosition[I] = (
 					PartDstPosition[I] - PartL2Pos
-				) * BeatMul1 + PartL2Pos * BeatMul2;
+				) * BeatMul1 + PartL2Pos;
 			#end
 
 			translate PartPosition[I]

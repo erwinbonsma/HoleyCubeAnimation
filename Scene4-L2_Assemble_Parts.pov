@@ -10,29 +10,43 @@
 #include "Moves.inc"
 #include "Anim.inc"
 
-// Clock: 0..30
-// Frames: 0..720
+// Clock: 0..35
+// Frames: 0..840
+
+//--------------------------------------
+// Coordinate to beat of sound track
 
 // End clock ticks of previous animation, where beat started
-#declare BeatTimeOffset = 190;
+#declare BeatTimeOffset = 180;
 #include "Beat.inc"
 
 // Switch from hi to medium beat when part assembly starts
 #local BeatT0 = 14;
 
-// Ramp down from hi-beat movement to no movement. Ramp down starts in sync
-// with music. Ramp down ends when parts need to be assembled into a puzzle.
-#local BeatT1 = 24;
-#local BeatT2 = 30;
-
 #local f_beatamp = function(time) {
-	1 - f_ramp(BeatT0 - 0.5, BeatT0 + 0.5, time)
-	+ 2 * (1 - f_ramp(BeatT1, BeatT2, time))
+	1 - f_ramp(BeatT0 - 0.5, BeatT0 + 0.5, time) + 2
 }
 
-#declare f_beatmul_L2 = function(time) {
-	f_beatmul(f_beat(time), BeatAmpL2 * f_beatamp(time))
+// Time when L1 beat multiplier starts phading out.
+// Also time when L2 beat multiplier starts phade in.
+#local BeatSwitchStart = 5;
+
+// Time when L1 beat multiplier is fully phaded out.
+// Also time when L2 beat multiplier phade in finished.
+#local BeatSwitchEnd = 17;
+
+#declare f_beatmul_L1 = function(time) {
+	f_beatmul(
+		f_beat(time),
+		BeatAmpL1 * f_beatamp(time) * (1 - f_ramp(BeatSwitchStart, BeatSwitchEnd, time)))
 }
+#declare f_beatmul_L2 = function(time) {
+	f_beatmul(
+		f_beat(time),
+		BeatAmpL2 * f_beatamp(time) * f_ramp(BeatSwitchStart, BeatSwitchEnd, time))
+}
+
+//--------------------------------------
 
 #local D1 = 3;
 #local D2 = 9;
@@ -45,12 +59,13 @@ InitAssemblyPlacementL2(PartPosition, PartRotation, D1, D2)
 //--------------------------------------
 // Rotate puzzle
 
-#declare RotT = 14;
+#declare RotStart = 2;
+#declare RotEnd = 20;
 #declare PuzzleTransform = transform {
-	rotate LerpVector(<0, 0, 0>, <0, 360, 0>, f_sramp(0, RotT, clock))
+	rotate LerpVector(<0, 0, 0>, <0, 360, 0>, f_sramp(RotStart, RotEnd, clock))
 }
 
-#declare Now = RotT;
+#declare Now = RotEnd + 1;
 
 //--------------------------------------
 // Assemble L2 parts
@@ -71,8 +86,8 @@ InitAssemblyPlacementL2(PartPosition, PartRotation, D1, D2)
 #declare P1_XxX = P_XxX;
 
 #local AssemblyStart = Now;
-#for (I, 0, NumParts - 1)
 
+#for (I, 0, NumParts - 1)
 	#local L2_Rotation = transform {
 		transform { RotationForPart(I) inverse }
 
@@ -142,6 +157,8 @@ InitAssemblyPlacementL2(PartPosition, PartRotation, D1, D2)
 	#declare P1_XxX = P1_XxX + NumParts;
 #end
 
+#debug concat("Move Done =", str(Now, 0, 0), "\n")
+
 //--------------------------------------
 // Animate camera (throughout animation)
 
@@ -155,6 +172,7 @@ InitAssemblyPlacementL2(PartPosition, PartRotation, D1, D2)
 //--------------------------------------
 // Place objects
 
+#local BeatMul1 = f_beatmul_L1(clock);
 #local BeatMul2 = f_beatmul_L2(clock);
 
 union {
@@ -163,7 +181,9 @@ union {
 		#local PartTypeL2 = div(I, NumParts);
 
 		#local PartL2Pos = PositionForPart(PartTypeL2, D2);
-		#declare PartPosition[I] = PartPosition[I] + (BeatMul2 - 1) * PartL2Pos;
+		#declare PartPosition[I] = (
+			PartPosition[I] - PartL2Pos
+		) * BeatMul1 + PartL2Pos * BeatMul2;
 
 		#if (true)
 		object {
