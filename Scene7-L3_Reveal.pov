@@ -57,6 +57,7 @@ DefineCompoundParts_L2()
 	CameraPosition, <-185, 40, 80>, f_sramp(CameraT0, CameraT1, clock)
 );
 
+#declare DetailAreaLightActivation = 1;
 #include "Scene.inc"
 
 //--------------------------------------
@@ -88,6 +89,7 @@ DefineCompoundParts_L2()
 				translate x * (-1 + 2 * I) * D3
 			}
 		#end
+
 		pigment { color rgb PartColor[N] }
 
 		transform { RotationForPart(N) }

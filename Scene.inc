@@ -46,6 +46,36 @@ light_source {
 	rotate y * -20
 }
 
+#ifdef (DetailAreaLightActivation)
+	// Extra lights for use in Scene 7 to add detail to L3 connector parts that
+	// are fully in the shadow of the main lights. They are optional, as they slow
+	// rendering, and do not significantly improve the other scenes.
+
+	light_source {
+		-z * 1000
+		color White * 0.04 * DetailAreaLightActivation
+
+		#if (AreaLights)
+			area_light
+			x * 100, y * 100, 100, 100
+			adaptive 1
+		#end
+	}
+
+	light_source {
+		-z * 1000
+		color White * 0.02 * DetailAreaLightActivation
+
+		#if (AreaLights)
+			area_light
+			x * 100, y * 100, 100, 100
+			adaptive 1
+		#end
+
+		rotate y * 90
+	}
+#end
+
 sky_sphere {
 	pigment { color Black }
 }
@@ -70,28 +100,3 @@ camera {
 	translate  CameraLookAt
 }
 
-#macro PuzzleL1()
-	union {
-		#for (I, 0, NumParts - 1)
-			object {
-				Part_L1(I)
-				transform { PartRotation[I] }
-				translate PartPosition[I]
-				transform { PuzzleTransformForPart(I) }
-			}
-		#end
-	}
-#end
-
-#macro PuzzleL2()
-	union {
-		#for (I, 0, NumPartsL2 - 1)
-			object {
-				Part_L2[I]
-				transform { PartRotation[I] }
-				translate PartPosition[I]
-				transform { PuzzleTransformForPart(I) }
-			}
-		#end
-	}
-#end

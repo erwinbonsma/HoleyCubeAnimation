@@ -82,6 +82,14 @@ DefineCompoundParts_L2()
 	CameraPosition, <-51, 11, 22>, f_ramp(CameraT0, CameraT1, clock)
 );
 
+#local DetailAreaLightsT0 = 15;
+#local DetailAreaLightsT1 = 30;
+#if (clock >= DetailAreaLightsT0)
+	#declare DetailAreaLightActivation = f_ramp(
+		DetailAreaLightsT0, DetailAreaLightsT1, clock
+	);
+#end
+
 #include "Scene.inc"
 
 //--------------------------------------
