@@ -40,15 +40,18 @@ DefineCompoundParts_L2()
 
 // Match Scene 5 camera end position
 #declare CameraLookAt = <0, 0, 0>;
-#declare CameraPosition = <-83, 54, -75> * 0.45;
+#declare CameraPosition = <-230, 50, 100> * 0.2;
 
 #local CameraT0 = 0;
 #local CameraT1 = 30;
 #declare CameraLookAt = LerpVector(
 	CameraLookAt, <-D3, 0, -D3>, f_ramp(CameraT0, CameraT1, clock)
 );
+//#declare CameraPosition = LerpVector(
+//	CameraPosition, <-83 * 1.2, 54 * 0.3, -75 / 1.2> * 2.2, f_ramp(CameraT0, CameraT1, clock)
+//);
 #declare CameraPosition = LerpVector(
-	CameraPosition, <-83, 54, -75> * 2.2, f_ramp(CameraT0, CameraT1, clock)
+	CameraPosition, <-230, 50, 100> * 0.8, f_ramp(CameraT0, CameraT1, clock)
 );
 
 #include "Scene.inc"
@@ -64,4 +67,20 @@ DefineCompoundParts_L2()
 		translate PositionForPart(I, D3)
 		translate <-D3, 0, -D3>
 	}
+#end
+
+#for (X, 0, 1)
+	#for (Y, 0, 1)
+		#for (Z, 0, 1)
+			box {
+				<-1, -1, -1>, <1, 1, 1>
+				scale 4.5
+
+				translate <1 - 2*X, 1 - 2*Y, 1 - 2*Z> * D3
+				translate <-D3, 0, -D3>
+
+				pigment { color White }
+			}
+		#end
+	#end
 #end
