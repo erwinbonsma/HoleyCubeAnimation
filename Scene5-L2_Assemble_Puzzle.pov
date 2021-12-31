@@ -21,12 +21,13 @@
 #include "Beat.inc"
 
 #local BeatAmp = 2;
-#local BeatT1 = 14;
+#local AmpD = 0.5;
+#local BeatT1 = 13;
 
 #declare f_beatmul_L2 = function(time) {
 	f_beatmul(
 		f_beat(time),
-		BeatAmpL2 * BeatAmp * (1 - f_ramp(0, BeatT1, time))
+		BeatAmpL2 * BeatAmp * (1 - f_ramp(BeatT1 - AmpD, BeatT1 + AmpD, time))
 	)
 }
 
