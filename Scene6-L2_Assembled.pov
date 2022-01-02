@@ -95,31 +95,43 @@ DefineCompoundParts_L2()
 //--------------------------------------
 // Place objects
 
+#declare FakeBody = difference {
+	box { <-1, -1, -1>, <1, 1, 1> scale 4.5 }
+	box { <-4, -1, -1>, <4, 1, 1> scale 3/2 }
+	box { <-1, -4, -1>, <1, 4, 1> scale 3/2 }
+	box { <-1, -1, -4>, <1, 1, 4> scale 3/2 }
+}
+
+#local RefPos = PositionForPart(7, D3);
+
 object {
 	CompoundPuzzle_L2
 	transform { PuzzleTransform }
 }
 
-union {
-	box {
-		<-1, -1, -1>,
-		<1, 1, 1>
+#local ShadowCastDistanceMultiplier = (4 - 3 * f_sramp(0, 30, clock));
 
-		scale 4.5
-	}
-	object {
-		Connector_L3
-		translate <-3, 0, -6>
-	}
-	object {
-		Connector_L3
-		translate <3, 0, -6>
-	}
-	object {
-		Connector_L3
-		translate <0, -6, -3>
-	}
-	pigment { color White }
+#for (N, 0, NumParts - 1)
+	union {
+		#if (N != 7)
+			object { FakeBody }
+		#end
 
-	translate y * D3 * (4 - 3 * f_sramp(0, 30, clock))
-}
+		#for (I, 0, 1)
+			object {
+				PartConnector_L3[N][I]
+
+				translate x * (-1 + 2 * I) * D3 * ShadowCastDistanceMultiplier
+			}
+		#end
+
+		pigment { color White }
+
+		transform { RotationForPart(N) }
+		#local FinalPos = PositionForPart(N, D3);
+
+		translate (FinalPos - RefPos) * ShadowCastDistanceMultiplier + RefPos
+
+		translate <-D3, 0, -D3>
+	}
+#end

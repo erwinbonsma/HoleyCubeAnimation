@@ -63,24 +63,9 @@ DefineCompoundParts_L2()
 		object { CompoundPuzzle_L2 }
 
 		#for (I, 0, 1)
-			union {
-				object {
-					Connector[mod(PartConnector[N][I], 3)]
-					scale 9
-				}
+			object {
+				PartConnector_L3[N][I]
 
-				union {
-					object {
-						Connector_L3
-						translate <6 * (1 - 2 * I), 0, 3>
-					}
-					object {
-						Connector_L3
-						translate <6 * (1 - 2 * I), 0, -3>
-					}
-				}
-
-				rotate x * 90 * div(PartConnector[N][I], 3)
 				translate x * (-1 + 2 * I) * D3
 			}
 		#end
