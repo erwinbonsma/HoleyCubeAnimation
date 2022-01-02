@@ -1,1 +1,3 @@
 ffmpeg -r 24 -f image2 -pattern_type glob -i "*.png" -vcodec libx264 -crf 20 -pix_fmt yuv420p Out.mp4
+
+ffmpeg -i Out.mp4 -i ~/Downloads/Synapsis-Armageddon.mp3 -c copy -map 0:v:0 -map 1:a:0 Out.mov

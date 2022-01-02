@@ -11,8 +11,8 @@
 #include "Moves.inc"
 #include "Anim.inc"
 
-// Clock: 0..30
-// Frames: 0..720
+// Clock: 0..35
+// Frames: 0..840
 
 #local D2 = 3;
 #local D3 = 21;
