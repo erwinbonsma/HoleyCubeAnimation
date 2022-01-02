@@ -31,6 +31,8 @@
 	)
 }
 
+#declare BeatMovementCenter = array[NumParts];
+
 //--------------------------------------
 // Initial placement of compound L2 parts
 
@@ -89,6 +91,61 @@ SlowMove6(<P_XxX, P_I_H, P_H_X>, <P_IxX, P_I_I, P_H_H>, -x * 2 * 3)
 SlowMove6(<P_X_X, P_IxH, P_HxX>, <P_I_X, P_IxI, P_HxH>, x * 2 * 3)
 
 //--------------------------------------
+// Align movement centers just before parts are connected
+
+// Connections at t = 3
+#declare BeatMovementCenter[P_XxX - 1] = LerpVector(
+	<0, 0, 0>, <0, 0, -3>, f_ramp(0, 1.5, clock)
+);
+#declare BeatMovementCenter[P_I_H - 1] = LerpVector(
+	<0, 0, 0>, <3, 0, 0>, f_ramp(0, 1.5, clock)
+);
+#declare BeatMovementCenter[P_HxX - 1] = LerpVector(
+	<0, 0, 0>, <0, 0, 3>, f_ramp(0, 1.5, clock)
+);
+#declare BeatMovementCenter[P_IxH - 1] = LerpVector(
+	<0, 0, 0>, <-3, 0, 0>, f_ramp(0, 1.5, clock)
+);
+
+// Connections at t = 6
+#declare BeatMovementCenter[P_IxX - 1] = LerpVector(
+	<0, 0, 0>, <0, 3, 0>, f_ramp(3, 4.5, clock)
+);
+#declare BeatMovementCenter[P_IxI - 1] = LerpVector(
+	<0, 0, 0>, <0, 3, 0>, f_ramp(3, 4.5, clock)
+);
+
+// Connections at t = 9
+#declare BeatMovementCenter[P_H_X - 1] = LerpVector(
+	<0, 0, 0>, <0, 3, -6>, f_ramp(6, 7.5, clock)
+);
+#declare BeatMovementCenter[P_HxH - 1] = LerpVector(
+	<0, 0, 0>, <0, 0,  3>, f_ramp(6, 7.5, clock)
+);
+#declare BeatMovementCenter[P_I_X - 1] = LerpVector(
+	<0, 0, 0>, <-3, 0, 0>, f_ramp(6, 7.5, clock)
+);
+
+// Connections at t = 12
+#declare BeatMovementCenter[P_H_H - 1] = LerpVector(
+	<0, 0, 0>, <0, 6, -3>, f_ramp(9, 10.5, clock)
+);
+#declare BeatMovementCenter[P_X_X - 1] = LerpVector(
+	<0, 0, 0>, <0, 3, 6>, f_ramp(9, 10.5, clock)
+);
+
+// Connections at t = 15
+#declare BeatMovementCenter[P_I_I - 1] = LerpVector(
+	<0, 0, 0>, <0, 3, 6>, f_ramp(12, 13.5, clock)
+);
+#declare BeatMovementCenter[P_HxH - 1] = LerpVector(
+	BeatMovementCenter[P_HxH - 1], <0, 6,  3>, f_ramp(6, 7.5, clock)
+);
+#declare BeatMovementCenter[P_I_X - 1] = LerpVector(
+	BeatMovementCenter[P_I_X - 1], <-3, 6, 0>, f_ramp(6, 7.5, clock)
+);
+
+//--------------------------------------
 // Animate camera (throughout animation)
 
 // Match Anim04 end position
@@ -113,6 +170,8 @@ SlowMove6(<P_X_X, P_IxH, P_HxX>, <P_I_X, P_IxI, P_HxH>, x * 2 * 3)
 		CompoundPart_L2[I]
 
 		transform { PartRotation[I] }
-		translate PartPosition[I] * BeatMul2
+		translate (
+			(PartPosition[I] + BeatMovementCenter[I]) * BeatMul2 - BeatMovementCenter[I]
+		)
 	}
 #end
