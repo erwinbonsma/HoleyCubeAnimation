@@ -15,10 +15,13 @@
 #ifndef (CameraPosition)
 	#declare CameraPosition = -z * 40;
 #end
+#ifndef (Brightness)
+	#declare Brightness = 1;
+#end
 
 light_source {
 	-z * 60
-	color White * 0.9
+	color White * 0.9 * Brightness
 
 	#if (AreaLights)
 		area_light
@@ -33,7 +36,7 @@ light_source {
 
 light_source {
 	-z * 60
-	color White * 0.2
+	color White * 0.2 * Brightness
 
 	#if (AreaLights)
 		area_light
@@ -53,7 +56,7 @@ light_source {
 
 	light_source {
 		-z * 1000
-		color White * 0.04 * DetailAreaLightActivation
+		color White * 0.04 * DetailAreaLightActivation * Brightness
 
 		#if (AreaLights)
 			area_light
@@ -64,7 +67,7 @@ light_source {
 
 	light_source {
 		-z * 1000
-		color White * 0.02 * DetailAreaLightActivation
+		color White * 0.02 * DetailAreaLightActivation * Brightness
 
 		#if (AreaLights)
 			area_light

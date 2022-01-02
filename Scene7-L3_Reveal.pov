@@ -42,17 +42,24 @@ DefineCompoundParts_L2()
 // Match Scene 6 camera end position
 #declare CameraLookAt = <0, 0, 0>;
 #declare CameraPosition = <-51, 11, 22>;
+#declare CameraLookAtEnd = <-D3, 0, -D3>;
+#declare CameraPositionEnd = <-185, 40, 80>;
 
 #local CameraT0 = 0;
 #local CameraT1 = 30;
 #declare CameraLookAt = LerpVector(
-	CameraLookAt, <-D3, 0, -D3>, f_sramp(CameraT0, CameraT1, clock)
+	CameraLookAt, CameraLookAtEnd, f_sramp(CameraT0, CameraT1, clock)
 );
 #declare CameraPosition = LerpVector(
-	CameraPosition, <-185, 40, 80>, f_sramp(CameraT0, CameraT1, clock)
+	CameraPosition, CameraPositionEnd, f_sramp(CameraT0, CameraT1, clock)
 );
 
 #declare DetailAreaLightActivation = 1;
+
+#local CreditsT0 = 30;
+#local CreditsT1 = 35;
+#declare Brightness = 1 - 0.6 * f_sramp(CreditsT0, CreditsT1, clock);
+
 #include "Scene.inc"
 
 //--------------------------------------
@@ -74,6 +81,66 @@ DefineCompoundParts_L2()
 
 		transform { RotationForPart(N) }
 		translate PositionForPart(N, D3)
+		translate <-D3, 0, -D3>
+	}
+#end
+
+//--------------------------------------
+// Credits
+
+#local CreditsT0 = 30;
+#local CreditsT1 = 35;
+
+#macro CenterText(Text, Y, Size)
+	#local TextObject = text {
+		ttf "GillSans.ttc" Text
+		0.0001, 0
+
+		scale Size
+		hollow
+	}
+	#local Min = min_extent(TextObject);
+	#local Max = max_extent(TextObject);
+
+	object {
+		TextObject
+
+		no_shadow
+		texture {
+			pigment {
+				color rgbt <0.9, 0.9, 0.9, 1 - f_sramp(CreditsT0, CreditsT1, clock)>
+			}
+			finish {
+				diffuse 0
+				ambient 1
+			}
+		}
+
+		translate <(Min.x - Max.x) / 2, Y, -40>
+	}
+#end
+
+#if (clock > CreditsT0)
+	union {
+		CenterText("Puzzle", 17, 6)
+		CenterText("\"Twelve Straight/Twisted\"", 13, 4)
+		CenterText("by Yukio Hirose", 9, 4)
+
+		CenterText("Music", 1, 6)
+		CenterText("\"Armageddon\"", -3, 4)
+		CenterText("by Synapsis", -7, 4)
+
+		CenterText("Animation", -15, 6)
+		CenterText("by Erwin Bonsma", -19, 4)
+
+		#local D = sqrt(
+			CameraPositionEnd.x * CameraPositionEnd.x +
+			CameraPositionEnd.z * CameraPositionEnd.z
+		);
+		#local Alpha = degrees(atan2(CameraPositionEnd.y, D));
+		#local Beta = degrees(atan2(CameraPositionEnd.x, CameraPositionEnd.z));
+		rotate <Alpha, 60, 0>
+
 		translate <-D3, 0, -D3>
 	}
 #end
