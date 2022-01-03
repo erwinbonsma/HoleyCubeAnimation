@@ -1,8 +1,8 @@
 # Holey Cube puzzle animation
 
-This repository contains the POV-Ray source files for creating an animation
-featuring the Holey Cube puzzle. The Holey Cube puzzle is an extension of the
-puzzle Twelve Straight/Twisted designed by Yukio Hirose.
+This repository contains the POV-Ray source files for my
+[Holey Cube animation](https://youtu.be/nSJAEyxExLY). The Holey Cube puzzle is
+an extension of the puzzle Twelve Straight/Twisted designed by Yukio Hirose.
 
 ## Puzzle Levels
 
